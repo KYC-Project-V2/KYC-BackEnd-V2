@@ -8,6 +8,7 @@ namespace Model
 {
     public class Authentication
     {
+        // Repository checks
         public int? Id { get; set; }
         public string? Code { get; set; }
         public string? DomainName { get; set; }
