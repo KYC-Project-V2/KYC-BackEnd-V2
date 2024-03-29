@@ -21,6 +21,7 @@ namespace Model
         public string? FolderPath { get; set; }
         public string? FullPath { get; set; }
         public string? OCRInformation { get; set; }
+        public bool IsVaidDocumentType { get; set; } = false;
         //public string? PhisicalPath { get; set; }
         //public string? RepositoryPath { get; set; }
 
