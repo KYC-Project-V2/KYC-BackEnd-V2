@@ -44,7 +44,8 @@ namespace KYCServiceApi.Controllers
                         file.CopyTo(stream);
                     }
 
-                    //TODO: add service
+                    //TODO: add service 
+                    //Need to add logic for valid document
                     switch (documentType)
                     {
                         case "Aadhar":
