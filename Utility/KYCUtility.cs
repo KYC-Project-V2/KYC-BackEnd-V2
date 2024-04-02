@@ -139,7 +139,9 @@ namespace Utility
                 return resultStream.ToArray();
             }
         }
+        
 
+       
         public static XMLResponse XmlToJson(string xml)
         {
             XMLResponse xmlResponse = new();
@@ -471,6 +473,21 @@ namespace Utility
 
             return filePath;
         }
+        
 
+        public static string GenerateRandomString(int length)
+        {
+            Random random = new Random();
+            const string alphanumericChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder sb = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                int index = random.Next(alphanumericChars.Length);
+                sb.Append(alphanumericChars[index]);
+            }
+
+            return sb.ToString();
+        }
     }
 }

@@ -111,6 +111,9 @@ namespace KYCServiceApi
             services.AddTransient<IJWTService, JWTService>();
             services.AddTransient<IJWTRepository, JWTRepository>();
 
+            services.AddTransient<IService<SProvider>, ServiceProviderService>();
+            services.AddTransient<IRepository<SProvider>, ServiceProviderRepository>();
+
             services.AddHttpClient();
             services.AddHealthChecks();
             services.AddSignalR();
