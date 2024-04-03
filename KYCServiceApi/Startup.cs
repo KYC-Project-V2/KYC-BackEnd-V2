@@ -35,6 +35,9 @@ namespace KYCServiceApi
             services.AddTransient<IService<State>, StateService>();
             services.AddTransient<IRepository<State>, StateRepository>();
 
+            services.AddTransient<IService<Country>, CountryService>();
+            services.AddTransient<IRepository<Country>, CountryRepository>();
+
             services.AddTransient<IService<AadharInfo>, AadharInfoService>();
             services.AddTransient<IRepository<AadharInfo>, AadharInfoRepository>();
 
