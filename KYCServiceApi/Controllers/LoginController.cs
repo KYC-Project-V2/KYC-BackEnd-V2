@@ -20,14 +20,14 @@ namespace KYCServiceApi.Controllers
             _service = service;
         }
         
-        // GET api/<LoginController>/5
-        [HttpGet()]
-        public async Task<IActionResult> Login([FromQuery] string UserId, [FromQuery] string Password)
+        // Post api/<LoginController>/5
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginUserRequest loginUserRequest)
         {
             var model = new LoginUser
             {
-                UserId = UserId,
-                Password = Password,
+                UserName = loginUserRequest.UserName,
+                Password = loginUserRequest.Password,
                  
             };
             var response = await _service.Get(model);

@@ -24,7 +24,7 @@ namespace Repository
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@UserId", model.UserId));
+                    command.Parameters.Add(new SqlParameter("@UserName", model.UserName));
                     command.Parameters.Add(new SqlParameter("@Password", model.Password));
 
                     var reader = await command.ExecuteReaderAsync();
