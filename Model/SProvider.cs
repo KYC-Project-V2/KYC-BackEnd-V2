@@ -29,6 +29,8 @@ namespace Model
         public DateTime? IssueDateTime { get; set; }
         public string? CustomerRepresentativeName { get; set; }
         public int? ApiStatus { get; set; }
+        public string? ApiStatusText { get; set; }
+        
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }

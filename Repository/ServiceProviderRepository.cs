@@ -57,7 +57,7 @@ namespace Repository
                     foreach (var property in modelProperties)
                     {
                         var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                        if (modelPropertyNameValue != null && property.Name!= "DuplicateProvider" && property.Name != "SaltKey")
+                        if (modelPropertyNameValue != null && property.Name!= "DuplicateProvider" && property.Name != "SaltKey" && property.Name != "ApiStatusText")
                         {
                             parameters.Add(property.Name, modelPropertyNameValue);
                         }
@@ -104,7 +104,8 @@ namespace Repository
                                     PhoneNumber = reader.GetString(reader.GetOrdinal("PhoneNumber")),
                                     IPAddressRange = reader.GetString(reader.GetOrdinal("IPAddressRange")),
                                     ReturnUrl = reader.GetString(reader.GetOrdinal("ReturnUrl")),
-                                    ApiStatus = reader.GetInt32(reader.GetOrdinal("ApiStatus"))
+                                    ApiStatus = reader.GetInt32(reader.GetOrdinal("ApiStatus")),
+                                    ApiStatusText = reader.GetString(reader.GetOrdinal("ApiStatusText"))
                                     // Map other columns as needed
                                 };
 
