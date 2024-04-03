@@ -8,11 +8,11 @@ namespace KYCServiceApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class StateController : BaseController
+    public class CountryController : BaseController
     {
-        private readonly IService<State> _service;
-        public StateController(
-            IService<State> service)
+        private readonly IService<Country> _service;
+        public CountryController(
+            IService<Country> service)
         {
             _service = service;
         }
