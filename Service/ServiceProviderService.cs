@@ -30,6 +30,8 @@ namespace Service
             sprovider.RequestToken = KYCUtility.GenerateRandomString(10);
             //sprovider.RequestNumber = KYCUtility.encrypt(sprovider.RequestNumber, sprovider.SaltKey);
             sprovider.RequestToken = KYCUtility.encrypt(sprovider.RequestToken, sprovider.SaltKey);
+            sprovider.PAN = KYCUtility.encrypt(sprovider.PAN, sprovider.SaltKey);
+            sprovider.GST = KYCUtility.encrypt(sprovider.GST, sprovider.SaltKey);
             sprovider.CreatedDate = DateTime.Now;
             var reposnse = await Repository.Post(sprovider);
             return reposnse;

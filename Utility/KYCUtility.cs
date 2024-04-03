@@ -225,7 +225,7 @@ namespace Utility
             message.From = new MailAddress(fromaddress);
             message.To.Add(new MailAddress(model.ToAddress));
             message.Subject = model.Subject;
-            message.IsBodyHtml = Constants.IsBodyHtml;
+            message.IsBodyHtml = !string.IsNullOrEmpty(model.AttachmentPath) ? Constants.IsBodyHtml : false;
             message.Body = model.Body;
             Attachment attachment=null;
             try

@@ -57,7 +57,7 @@ namespace Repository
                     foreach (var property in modelProperties)
                     {
                         var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                        if (modelPropertyNameValue != null && property.Name!= "DuplicateProvider" && property.Name != "SaltKey" && property.Name != "ApiStatusText")
+                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" && property.Name != "ApiStatusText")
                         {
                             parameters.Add(property.Name, modelPropertyNameValue);
                         }
@@ -79,12 +79,12 @@ namespace Repository
                             if (await reader.ReadAsync())
                             {
                                 // Map the reader data to your model
-                                if(reader.GetInt32(reader.GetOrdinal("DuplicateProvider")) == 1)
-                                {
-                                    ServiceProvider.DuplicateProvider=true;
-                                    ServiceProvider.SaltKey = null;
-                                    return ServiceProvider;
-                                }
+                                //if(reader.GetInt32(reader.GetOrdinal("DuplicateProvider")) == 1)
+                                //{
+                                //    ServiceProvider.DuplicateProvider=true;
+                                //    ServiceProvider.SaltKey = null;
+                                //    return ServiceProvider;
+                                //}
                                 SProvider insertedRecord = new SProvider
                                 {
                                     // Example: Map the columns to properties of YourModel
@@ -92,8 +92,8 @@ namespace Repository
                                     ProviderName = reader.GetString(reader.GetOrdinal("ProviderName")),
                                     RequestNumber = reader.GetString(reader.GetOrdinal("RequestNumber")),
                                     RequestToken =   KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("RequestToken")), ServiceProvider.SaltKey),
-                                    GST = reader.GetString(reader.GetOrdinal("GST")),
-                                    PAN = reader.GetString(reader.GetOrdinal("PAN")),
+                                    GST = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("GST")), ServiceProvider.SaltKey),
+                                    PAN = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("PAN")), ServiceProvider.SaltKey),
                                     AddressLine1 = reader.GetString(reader.GetOrdinal("AddressLine1")),
                                     AddressLine2 = reader.GetString(reader.GetOrdinal("AddressLine2")),
                                     City = reader.GetString(reader.GetOrdinal("City")),

@@ -35,7 +35,6 @@ namespace Model
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? UpdatedBy { get; set; }
-        public bool? DuplicateProvider { get; set; }= false;
         public string? SaltKey { get; set; } 
     }
 }
