@@ -35,6 +35,8 @@ namespace Model
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? UpdatedBy { get; set; }
-        public string? SaltKey { get; set; } 
+        public string? SaltKey { get; set; }
+        public string? RequestErrorMessage { get; set; }
+        public string? TokenErrorMessage { get; set; }
     }
 }

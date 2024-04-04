@@ -1,5 +1,5 @@
 ﻿using Model;
-
+using Org.BouncyCastle.Asn1.X509;
 using Repository;
 
 using System;
@@ -13,13 +13,17 @@ namespace Service
 {
     public class ServiceProviderService : BaseService<SProvider>
     {
-        public ServiceProviderService(IRepository<SProvider> repository)
+        private readonly IService<TemplateConfiguration> _templateConfigurationservice;
+        private readonly IService<Email> _emailService;
+        public ServiceProviderService(IRepository<SProvider> repository, IService<TemplateConfiguration> templateConfigurationservice, IService<Email> emailService)
         {
             Repository = repository;
+            _templateConfigurationservice = templateConfigurationservice;
+            _emailService = emailService;
         }
-        public override async Task<SProvider> Get(string code)
+        public override async Task<SProvider> Get(SProvider sprovider)
         {
-            var response = await Repository.Get(code);
+            var response = await Repository.Get(sprovider);
             return response;
         }
         public override async Task<SProvider> Post(SProvider sprovider)
@@ -34,7 +38,28 @@ namespace Service
             sprovider.GST = KYCUtility.encrypt(sprovider.GST, sprovider.SaltKey);
             sprovider.CreatedDate = DateTime.Now;
             var reposnse = await Repository.Post(sprovider);
+            if(reposnse != null && reposnse.ProviderId!=null && reposnse.ProviderId != 0)
+            {
+                SendEmail(reposnse);
+            }
             return reposnse;
+        }
+        private async void SendEmail(SProvider sprovider)
+        {
+            var templateconfigResponse = await _templateConfigurationservice.Get(7);
+            var templateconfig = templateconfigResponse.FirstOrDefault();
+            var emailBody = templateconfig.Body;
+            emailBody = emailBody.Replace("{{name}}", sprovider.ProviderName);
+            emailBody = emailBody.Replace("{{requestnumber}}", sprovider.RequestNumber);
+            var email = new Email
+            {
+                ToAddress = sprovider.Email,
+                Subject = templateconfig.Subject,
+                FromAddess = templateconfig.Sender,
+                AttachmentPath = null,
+                Body = emailBody
+            };
+            await _emailService.Post(email);
         }
     }
 }

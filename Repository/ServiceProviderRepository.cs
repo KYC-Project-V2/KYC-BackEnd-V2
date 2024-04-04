@@ -22,24 +22,72 @@ namespace Repository
 
 
 
-        public override async Task<SProvider> Get(string code)
+        public override async Task<SProvider> Get(SProvider ServiceProvider)
         {
             SProvider model = null;
-            var storedProcedureName = "GetServiceProviderByCode";
+            var storedProcedureName = "GetServiceProviderInfo";
             using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@RequestNumber", code));
-                    var reader = command.ExecuteReader();
-                    while (reader.Read())
+                    command.Parameters.Add(new SqlParameter("@RequestNumber", ServiceProvider.RequestNumber));
+                    command.Parameters.Add(new SqlParameter("@TokenNumber", ServiceProvider.RequestToken));
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        model = Load<SProvider>(reader);
+                        try
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                if (reader.GetString(reader.GetOrdinal("RequestErrorMessage")) != "" || reader.GetString(reader.GetOrdinal("TokenErrorMessage")) != "")
+                                {
+                                    ServiceProvider.RequestErrorMessage = reader.GetString(reader.GetOrdinal("RequestErrorMessage"));
+                                    ServiceProvider.TokenErrorMessage = reader.GetString(reader.GetOrdinal("TokenErrorMessage"));
+                                    ServiceProvider.SaltKey = null;
+                                    return ServiceProvider;
+                                }
+                                SProvider insertedRecord = new SProvider
+                                {
+                                    // Example: Map the columns to properties of YourModel
+                                    ProviderId = reader.GetInt32(reader.GetOrdinal("ProviderId")),
+                                    ProviderName = reader.GetString(reader.GetOrdinal("ProviderName")),
+                                    RequestNumber = reader.GetString(reader.GetOrdinal("RequestNumber")),
+                                    RequestToken = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("RequestToken")), ServiceProvider.SaltKey),
+                                    GST = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("GST")), ServiceProvider.SaltKey),
+                                    PAN = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("PAN")), ServiceProvider.SaltKey),
+                                    AddressLine1 = reader.GetString(reader.GetOrdinal("AddressLine1")),
+                                    AddressLine2 = reader.GetString(reader.GetOrdinal("AddressLine2")),
+                                    City = reader.GetString(reader.GetOrdinal("City")),
+                                    StateId = reader.GetInt32(reader.GetOrdinal("StateId")),
+                                    PostalCode = reader.GetString(reader.GetOrdinal("PostalCode")),
+                                    CountryId = reader.GetInt32(reader.GetOrdinal("CountryId")),
+                                    Email = reader.GetString(reader.GetOrdinal("Email")),
+                                    PhoneNumber = reader.GetString(reader.GetOrdinal("PhoneNumber")),
+                                    IPAddressRange = reader.GetString(reader.GetOrdinal("IPAddressRange")),
+                                    ReturnUrl = reader.GetString(reader.GetOrdinal("ReturnUrl")),
+                                    ApiStatus = reader.GetInt32(reader.GetOrdinal("ApiStatus")),
+                                    ApiStatusText = reader.GetString(reader.GetOrdinal("ApiStatusText")),
+                                    RequestErrorMessage = reader.GetString(reader.GetOrdinal("RequestErrorMessage")),
+                                    TokenErrorMessage = reader.GetString(reader.GetOrdinal("TokenErrorMessage")),
+                                    // Map other columns as needed
+                                };
+
+                                ServiceProvider = insertedRecord;
+                            }
+                            else
+                            {
+                                throw new Exception("No record returned after insert.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception($"Error retrieving inserted record: {ex.Message}");
+                        }
+
                     }
                 }
             }
-            return model;
+            return ServiceProvider;
         }
         public override async Task<SProvider> Post(SProvider ServiceProvider)
         {
@@ -57,7 +105,7 @@ namespace Repository
                     foreach (var property in modelProperties)
                     {
                         var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" && property.Name != "ApiStatusText")
+                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" && property.Name != "ApiStatusText" && property.Name != "RequestErrorMessage" && property.Name != "TokenErrorMessage")
                         {
                             parameters.Add(property.Name, modelPropertyNameValue);
                         }
@@ -78,13 +126,6 @@ namespace Repository
                         {
                             if (await reader.ReadAsync())
                             {
-                                // Map the reader data to your model
-                                //if(reader.GetInt32(reader.GetOrdinal("DuplicateProvider")) == 1)
-                                //{
-                                //    ServiceProvider.DuplicateProvider=true;
-                                //    ServiceProvider.SaltKey = null;
-                                //    return ServiceProvider;
-                                //}
                                 SProvider insertedRecord = new SProvider
                                 {
                                     // Example: Map the columns to properties of YourModel

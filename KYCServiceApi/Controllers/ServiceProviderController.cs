@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Model;
 
 using Service;
-
+using System.Web;
 
 namespace KYCServiceApi.Controllers
 {
@@ -23,9 +23,14 @@ namespace KYCServiceApi.Controllers
             _configuration = configuration;
         }
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string code)
+        public async Task<IActionResult> Get([FromQuery] string requestNumber, string requestToken)
         {
-            var response = await _service.Get(code);
+            var SProvider=new SProvider();
+            SProvider.RequestNumber = requestNumber;
+            SProvider.RequestToken = requestToken;//HttpUtility.UrlDecode(
+            var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
+            SProvider.SaltKey = saltkey;
+            var response = await _service.Get(SProvider);
             return Ok(response);
         }
         [HttpPost]
