@@ -28,7 +28,8 @@ namespace Service
 
         public virtual async Task<T> Get(string value)
         {
-            throw new NotImplementedException();
+            return await Repository.Get(value);
+            //throw new NotImplementedException();
         }
         public virtual async Task<T> Get(bool value)
         {

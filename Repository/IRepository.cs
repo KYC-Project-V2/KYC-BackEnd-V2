@@ -18,7 +18,7 @@ namespace Repository
         T Load<T>(IDataReader dataReader) where T : new();
         Task<T> Post(T model);
         Task<T> Put(T model);
-        Task<bool> Delete(T model);
+        Task<bool> Delete(T model);       
 
     }
 }
