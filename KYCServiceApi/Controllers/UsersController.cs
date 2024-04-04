@@ -21,15 +21,14 @@ namespace KYCServiceApi.Controllers
 
         // GET single user/5
         [HttpGet("{id}")]
-        [Route("GetUser")]
-        public async Task<IActionResult> GetUser(string userId)
+        public async Task<IActionResult> GetUser(string id)
         {
-            var response = await _service.Get(userId);
+            var response = await _service.Get(id);
             return Ok(response);
         }
 
 
-        // GET all user bydefaul no need to pass method name //https://localhost:44372/api/Users
+        
         [HttpGet]
         [Route("GetAllUser")]
         public async Task<IActionResult> GetAllUser()
@@ -42,7 +41,7 @@ namespace KYCServiceApi.Controllers
         [Route("AddUser")]
         public async Task<IActionResult> AddUser([FromBody] UserDetail userDetail)
         {
-            var response = await _service.Post(userDetail);
+            var response = await _service.AddUser(userDetail);
             return Ok(response);
         }
 
@@ -50,7 +49,7 @@ namespace KYCServiceApi.Controllers
         [Route("UpdateUser")]
         public async Task<IActionResult> Put([FromBody] UserDetail userDetail)
         {
-            var response = _service.Put(userDetail);
+            var response = await _service.UpdateUser(userDetail);
             return Ok(response);
         }
     }

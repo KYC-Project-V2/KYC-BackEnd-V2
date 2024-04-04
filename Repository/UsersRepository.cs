@@ -17,7 +17,7 @@ namespace Repository
         {
             ConnectionInformation = sqlConnectionInformation;
         }
-        public override async Task<UserDetail> Get(string userId)
+        public override async Task<UserDetail> Get(string Id)
         {
             UserDetail response = null;
             var storedProcedureName = "GetUserData";
@@ -26,7 +26,7 @@ namespace Repository
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@UserId", userId));
+                    command.Parameters.Add(new SqlParameter("@Id", Id));
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {
@@ -62,16 +62,29 @@ namespace Repository
             return models;
         }
 
-        public override async Task<UserDetail> Post(UserDetail userDetail)
+        public override async Task<string> AddUser(UserDetail userDetail)
         {
             string cmdText = "AddUpdateUserDetails";
-            var userAddDetail = new UserDetail();
+            string result = string.Empty;
+            try
+            {
+                byte[] encData_byte = new byte[userDetail.Password.Length];
+                encData_byte = System.Text.Encoding.UTF8.GetBytes(userDetail.Password);
+                string encodedData = Convert.ToBase64String(encData_byte);
+                userDetail.Password = encodedData;
+                //return encodedData;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in base64Encode" + ex.Message);
+            }
             using (var connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
                 connection.Open();
 
                 using (var command = new SqlCommand(cmdText, connection) { CommandType = CommandType.StoredProcedure })
                 {
+
                     command.Parameters.Add(new SqlParameter("@RoleId", userDetail.RoleId));
                     command.Parameters.Add(new SqlParameter("@UserId", userDetail.UserId));
                     command.Parameters.Add(new SqlParameter("@UserName", userDetail.UserName));
@@ -88,32 +101,52 @@ namespace Repository
                     command.Parameters.Add(new SqlParameter("@PhoneNumber", userDetail.PhoneNumber));
                     command.Parameters.Add(new SqlParameter("@CreatedBy", userDetail.UserId));
                     command.Parameters.Add(new SqlParameter("@iSAddUser", "Y"));
-
-                    using (var response = command.ExecuteReaderAsync())
+                    try
                     {
-                        while (await response.Result.ReadAsync())
+                        var response = await command.ExecuteNonQueryAsync();
+                        if (response > 0)
                         {
-                            userAddDetail = Load<UserDetail>((IDataReader)response);
+                            result = "User Created Successfully.";
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                   
+
+
                 }
             }
-            return userAddDetail;
+            return result;
         }
 
 
 
-        public override async Task<UserDetail> Put(UserDetail userDetail)
+        public override async Task<string> UpdateUser(UserDetail userDetail)
         {
-            string cmdText = "AddUpdateUserDetails";
-            var userUpdateDetail = new UserDetail();
+            string cmdText = "AddUpdateUserDetails";          
+            string result = string.Empty;
 
+            try
+            {
+                byte[] encData_byte = new byte[userDetail.Password.Length];
+                encData_byte = System.Text.Encoding.UTF8.GetBytes(userDetail.Password);
+                string encodedData = Convert.ToBase64String(encData_byte);
+                userDetail.Password = encodedData;
+                //return encodedData;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in base64Encode" + ex.Message);
+            }
             using (var connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
                 connection.Open();
 
                 using (var command = new SqlCommand(cmdText, connection) { CommandType = CommandType.StoredProcedure })
                 {
+                    command.Parameters.Add(new SqlParameter("@Id", userDetail.Id));
                     command.Parameters.Add(new SqlParameter("@RoleId", userDetail.RoleId));
                     command.Parameters.Add(new SqlParameter("@UserId", userDetail.UserId));
                     command.Parameters.Add(new SqlParameter("@UserName", userDetail.UserName));
@@ -132,23 +165,28 @@ namespace Repository
                     command.Parameters.Add(new SqlParameter("@iSAddUser", "N"));
                     try
                     {
-                        using (var response = command.ExecuteReaderAsync())
+                        var response = await command.ExecuteNonQueryAsync();
+                        if (response > 0)
                         {
-                            while (await response.Result.ReadAsync())
-                            {
-                                userUpdateDetail = Load<UserDetail>((IDataReader)response);
-                            }
+                            result = "User Updated Successfully.";
                         }
+                        //using (var response = command.ExecuteReader())
+                        //{
+                        //    while (response.Read())
+                        //    {
+                        //        userUpdateDetail = Load<UserDetail>((IDataReader)response);
+                        //    }
+                        //}
                     }
                     catch (Exception ex)
                     {
 
                         throw ex;
                     }
-                    
+
                 }
             }
-            return userUpdateDetail;
+            return result;
         }
 
 

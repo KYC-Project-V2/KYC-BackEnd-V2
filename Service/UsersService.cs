@@ -1,5 +1,6 @@
 ﻿using iTextSharp.text;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using Model;
 using Repository;
 using System;
@@ -16,9 +17,9 @@ namespace Service
         {
             Repository = repository;
         }
-        public override async Task<UserDetail> Get(string UserId)
+        public override async Task<UserDetail> Get(string Id)
         {
-            var response = await Repository.Get(UserId);
+            var response = await Repository.Get(Id);
             if (response == null)
             {
                 var loginUser = new UserDetail();
@@ -45,37 +46,24 @@ namespace Service
             return response;
         }
 
-        public override async Task<UserDetail> Post(UserDetail userDetail)
+        public override async Task<string> AddUser(UserDetail userDetail)
         {
-            var response = await Repository.Post(userDetail);
-            if (response == null)
+            var response = await Repository.AddUser(userDetail);
+            
+            if (string.IsNullOrEmpty(response))
             {
-                var loginUser = new UserDetail();
-                loginUser.ErrorMessage = "User Creation Failed";
-                return loginUser;
+                response = "User Creation Failed";
             }
             return response;
         }
 
-        public override async Task<UserDetail> Put(UserDetail userDetail)
+        public override async Task<string> UpdateUser(UserDetail userDetail)
         {
-            UserDetail response = null;
-            try
+            var response = await Repository.UpdateUser(userDetail);
+            if (string.IsNullOrEmpty(response))
             {
-                response = await Repository.Put(userDetail);
-                if (response == null)
-                {
-                    var loginUser = new UserDetail();
-                    loginUser.ErrorMessage = "User Updation Failed";
-                    return loginUser;
-                }
+                response = "User Updation Failed";
             }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-          
             return response;
         }
     }

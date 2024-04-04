@@ -102,5 +102,15 @@ namespace Repository
         {
             throw new NotImplementedException();
         }
+
+        public virtual Task<string> AddUser(T model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<string> UpdateUser(T model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

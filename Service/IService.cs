@@ -18,6 +18,8 @@ namespace Service
         Task<T> Put(T model);
         Task<bool> Delete(T model);
         Task<List<T>> Post(List<T> model);
+        Task<string> AddUser(T model);
+        Task<string> UpdateUser(T model);
 
 
     }

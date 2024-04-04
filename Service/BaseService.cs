@@ -11,6 +11,15 @@ namespace Service
     {
         public IRepository<T> Repository { get; set; }
 
+        public virtual async Task<string> AddUser(T model)
+        {
+            return await Repository.AddUser(model);
+        }
+        public virtual async Task<string> UpdateUser(T model)
+        {
+            return await Repository.UpdateUser(model);
+        }
+
         public virtual Task<bool> Delete(T model)
         {
             throw new NotImplementedException();
@@ -60,5 +69,7 @@ namespace Service
         {
             throw new NotImplementedException();
         }
+
+       
     }
 }
