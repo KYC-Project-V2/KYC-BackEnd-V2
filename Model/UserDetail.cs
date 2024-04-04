@@ -9,7 +9,7 @@ namespace Model
     public class UserDetail
     {
         public string ?Id { get; set; }
-        public string UserId { get; set; }
+        public int? UserId { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public bool Status { get; set; }
@@ -24,6 +24,12 @@ namespace Model
         public string PhoneNumber { get; set; }
         public string RoleId { get; set; }
         public string? ErrorMessage { get; set;}
+
+    }
+
+    public class UserDetailResponse {
+        public string UserId { get; set; }
+        public string Message { get; set; }
 
     }
 }

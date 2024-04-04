@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Model;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Repository
         Task<T> Post(T model);
         Task<T> Put(T model);
         Task<bool> Delete(T model);
-        Task<string> AddUser(T model);
-        Task<string> UpdateUser(T model);
+        Task<UserDetailResponse> AddUser(T model);
+        Task<UserDetailResponse> UpdateUser(T model);
     }
 }

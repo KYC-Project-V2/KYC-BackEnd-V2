@@ -1,4 +1,5 @@
-﻿using Repository;
+﻿using Model;
+using Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace Service
     {
         public IRepository<T> Repository { get; set; }
 
-        public virtual async Task<string> AddUser(T model)
+        public virtual async Task<UserDetailResponse> AddUser(T model)
         {
             return await Repository.AddUser(model);
         }
-        public virtual async Task<string> UpdateUser(T model)
+        public virtual async Task<UserDetailResponse> UpdateUser(T model)
         {
             return await Repository.UpdateUser(model);
         }

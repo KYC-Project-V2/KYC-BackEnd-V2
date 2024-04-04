@@ -26,7 +26,7 @@ namespace Repository
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@Id", Id));
+                    command.Parameters.Add(new SqlParameter("@UserId", Id));
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {
@@ -62,10 +62,10 @@ namespace Repository
             return models;
         }
 
-        public override async Task<string> AddUser(UserDetail userDetail)
+        public override async Task<UserDetailResponse> AddUser(UserDetail userDetail)
         {
-            string cmdText = "AddUpdateUserDetails";
-            string result = string.Empty;
+            string cmdText = "AddUpdateUserDetails";            
+            UserDetailResponse userDetailResponse =null;
             try
             {
                 byte[] encData_byte = new byte[userDetail.Password.Length];
@@ -84,9 +84,11 @@ namespace Repository
 
                 using (var command = new SqlCommand(cmdText, connection) { CommandType = CommandType.StoredProcedure })
                 {
+                    Random generator = new Random();
+                    var randomNumber = generator.Next(0, 1000000).ToString("D6");
 
                     command.Parameters.Add(new SqlParameter("@RoleId", userDetail.RoleId));
-                    command.Parameters.Add(new SqlParameter("@UserId", userDetail.UserId));
+                    command.Parameters.Add(new SqlParameter("@UserId", randomNumber));
                     command.Parameters.Add(new SqlParameter("@UserName", userDetail.UserName));
                     command.Parameters.Add(new SqlParameter("@Password", userDetail.Password));
                     command.Parameters.Add(new SqlParameter("@Status", userDetail.Status));
@@ -106,7 +108,9 @@ namespace Repository
                         var response = await command.ExecuteNonQueryAsync();
                         if (response > 0)
                         {
-                            result = "User Created Successfully.";
+                            userDetailResponse = new UserDetailResponse();
+                            userDetailResponse.UserId = randomNumber;
+                            userDetailResponse.Message = "User Created Successfully.";
                         }
                     }
                     catch (Exception ex)
@@ -118,15 +122,15 @@ namespace Repository
 
                 }
             }
-            return result;
+            return userDetailResponse;
         }
 
 
 
-        public override async Task<string> UpdateUser(UserDetail userDetail)
+        public override async Task<UserDetailResponse> UpdateUser(UserDetail userDetail)
         {
-            string cmdText = "AddUpdateUserDetails";          
-            string result = string.Empty;
+            string cmdText = "AddUpdateUserDetails";
+            UserDetailResponse userDetailResponse = null;
 
             try
             {
@@ -168,15 +172,11 @@ namespace Repository
                         var response = await command.ExecuteNonQueryAsync();
                         if (response > 0)
                         {
-                            result = "User Updated Successfully.";
+                            userDetailResponse = new UserDetailResponse();
+                            userDetailResponse.UserId = Convert.ToString(userDetail?.UserId);
+                            userDetailResponse.Message = "User Updated Successfully.";
+                            
                         }
-                        //using (var response = command.ExecuteReader())
-                        //{
-                        //    while (response.Read())
-                        //    {
-                        //        userUpdateDetail = Load<UserDetail>((IDataReader)response);
-                        //    }
-                        //}
                     }
                     catch (Exception ex)
                     {
@@ -186,7 +186,7 @@ namespace Repository
 
                 }
             }
-            return result;
+            return userDetailResponse;
         }
 
 

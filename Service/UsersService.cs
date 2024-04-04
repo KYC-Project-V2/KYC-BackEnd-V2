@@ -46,23 +46,26 @@ namespace Service
             return response;
         }
 
-        public override async Task<string> AddUser(UserDetail userDetail)
+        public override async Task<UserDetailResponse> AddUser(UserDetail userDetail)
         {
             var response = await Repository.AddUser(userDetail);
             
-            if (string.IsNullOrEmpty(response))
+            if (response==null)
             {
-                response = "User Creation Failed";
+                response = new UserDetailResponse();
+                response.Message = "User Creation Failed";
             }
             return response;
         }
 
-        public override async Task<string> UpdateUser(UserDetail userDetail)
+        public override async Task<UserDetailResponse> UpdateUser(UserDetail userDetail)
         {
             var response = await Repository.UpdateUser(userDetail);
-            if (string.IsNullOrEmpty(response))
+            if (response==null)
             {
-                response = "User Updation Failed";
+                response = new UserDetailResponse();
+                response.Message = "User Updation Failed";
+                response.UserId = userDetail.UserId.ToString();
             }
             return response;
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Model;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -103,12 +104,12 @@ namespace Repository
             throw new NotImplementedException();
         }
 
-        public virtual Task<string> AddUser(T model)
+        public virtual Task<UserDetailResponse> AddUser(T model)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<string> UpdateUser(T model)
+        public virtual Task<UserDetailResponse> UpdateUser(T model)
         {
             throw new NotImplementedException();
         }
