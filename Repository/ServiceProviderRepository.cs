@@ -52,7 +52,7 @@ namespace Repository
                                     ProviderId = reader.GetInt32(reader.GetOrdinal("ProviderId")),
                                     ProviderName = reader.GetString(reader.GetOrdinal("ProviderName")),
                                     RequestNumber = reader.GetString(reader.GetOrdinal("RequestNumber")),
-                                    RequestToken = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("RequestToken")), ServiceProvider.SaltKey),
+                                    RequestToken = reader.GetString(reader.GetOrdinal("RequestToken")),
                                     GST = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("GST")), ServiceProvider.SaltKey),
                                     PAN = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("PAN")), ServiceProvider.SaltKey),
                                     AddressLine1 = reader.GetString(reader.GetOrdinal("AddressLine1")),

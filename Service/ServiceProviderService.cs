@@ -30,8 +30,10 @@ namespace Service
         {
             Random generator = new Random();
             int random = generator.Next(1, 1000000);
+            if(string.IsNullOrEmpty(sprovider.RequestNumber))
             sprovider.RequestNumber = "KYC-" + DateTime.Now.ToString("MMddyyyy") + "-" + random.ToString().PadLeft(3, '0');
-            sprovider.RequestToken = KYCUtility.GenerateRandomString(10);
+            if (string.IsNullOrEmpty(sprovider.RequestToken))
+                sprovider.RequestToken = KYCUtility.GenerateRandomString(10);
             //sprovider.RequestNumber = KYCUtility.encrypt(sprovider.RequestNumber, sprovider.SaltKey);
             sprovider.RequestToken = KYCUtility.encrypt(sprovider.RequestToken, sprovider.SaltKey);
             sprovider.PAN = KYCUtility.encrypt(sprovider.PAN, sprovider.SaltKey);
