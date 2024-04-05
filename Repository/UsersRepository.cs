@@ -97,7 +97,7 @@ namespace Repository
                     command.Parameters.Add(new SqlParameter("@City", userDetail.City));
                     command.Parameters.Add(new SqlParameter("@StateId", userDetail.StateId));
                     command.Parameters.Add(new SqlParameter("@PostalCode", userDetail.PostalCode));
-                    command.Parameters.Add(new SqlParameter("@CountryId", userDetail.Country));
+                    command.Parameters.Add(new SqlParameter("@CountryId", userDetail.CountryId));
                     command.Parameters.Add(new SqlParameter("@Reference", userDetail.Reference));
                     command.Parameters.Add(new SqlParameter("@Email", userDetail.Email));
                     command.Parameters.Add(new SqlParameter("@PhoneNumber", userDetail.PhoneNumber));
@@ -124,8 +124,6 @@ namespace Repository
             }
             return userDetailResponse;
         }
-
-
 
         public override async Task<UserDetailResponse> UpdateUser(UserDetail userDetail)
         {
@@ -161,11 +159,11 @@ namespace Repository
                     command.Parameters.Add(new SqlParameter("@City", userDetail.City));
                     command.Parameters.Add(new SqlParameter("@StateId", userDetail.StateId));
                     command.Parameters.Add(new SqlParameter("@PostalCode", userDetail.PostalCode));
-                    command.Parameters.Add(new SqlParameter("@CountryId", userDetail.Country));
+                    command.Parameters.Add(new SqlParameter("@CountryId", userDetail.CountryId));
                     command.Parameters.Add(new SqlParameter("@Reference", userDetail.Reference));
                     command.Parameters.Add(new SqlParameter("@Email", userDetail.Email));
                     command.Parameters.Add(new SqlParameter("@PhoneNumber", userDetail.PhoneNumber));
-                    command.Parameters.Add(new SqlParameter("@CreatedBy", userDetail.UserId));
+                    command.Parameters.Add(new SqlParameter("@UpdatedBy", userDetail.UserId));
                     command.Parameters.Add(new SqlParameter("@iSAddUser", "N"));
                     try
                     {
@@ -189,6 +187,6 @@ namespace Repository
             return userDetailResponse;
         }
 
-
+          
     }
 }

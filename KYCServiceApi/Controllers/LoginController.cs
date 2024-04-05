@@ -26,7 +26,7 @@ namespace KYCServiceApi.Controllers
         {
             var model = new LoginUser
             {
-                UserName = loginUserRequest.UserName,
+                UserId = loginUserRequest.UserId,
                 Password = loginUserRequest.Password,
                  
             };

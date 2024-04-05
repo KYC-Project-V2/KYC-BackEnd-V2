@@ -19,12 +19,24 @@ namespace Repository
         {
             LoginUser response = null;
             var storedProcedureName = "GetUserDetails";
+            //try
+            //{
+            //    byte[] encData_byte = new byte[model.Password.Length];
+            //    encData_byte = System.Text.Encoding.UTF8.GetBytes(model.Password);
+            //    string encodedData = Convert.ToBase64String(encData_byte);
+            //    model.Password = encodedData;
+            //    //return encodedData;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("Error in base64Encode" + ex.Message);
+            //}
             using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@UserName", model.UserName));
+                    command.Parameters.Add(new SqlParameter("@UserId", model.UserId));
                     command.Parameters.Add(new SqlParameter("@Password", model.Password));
 
                     var reader = await command.ExecuteReaderAsync();
