@@ -52,7 +52,7 @@ namespace Repository
                                     ProviderId = reader.GetInt32(reader.GetOrdinal("ProviderId")),
                                     ProviderName = reader.GetString(reader.GetOrdinal("ProviderName")),
                                     RequestNumber = reader.GetString(reader.GetOrdinal("RequestNumber")),
-                                    RequestToken = reader.GetString(reader.GetOrdinal("RequestToken")),
+                                    RequestToken = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("RequestToken")), ServiceProvider.SaltKey),
                                     GST = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("GST")), ServiceProvider.SaltKey),
                                     PAN = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("PAN")), ServiceProvider.SaltKey),
                                     AddressLine1 = reader.GetString(reader.GetOrdinal("AddressLine1")),
@@ -69,6 +69,8 @@ namespace Repository
                                     ApiStatusText = reader.GetString(reader.GetOrdinal("ApiStatusText")),
                                     RequestErrorMessage = reader.GetString(reader.GetOrdinal("RequestErrorMessage")),
                                     TokenErrorMessage = reader.GetString(reader.GetOrdinal("TokenErrorMessage")),
+                                    Tokencode = reader.GetString(reader.GetOrdinal("Tokencode")),
+                                    CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
                                     // Map other columns as needed
                                 };
 
@@ -105,7 +107,8 @@ namespace Repository
                     foreach (var property in modelProperties)
                     {
                         var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" && property.Name != "ApiStatusText" && property.Name != "RequestErrorMessage" && property.Name != "TokenErrorMessage")
+                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" && property.Name != "ApiStatusText" && property.Name != "RequestErrorMessage" 
+                            && property.Name != "TokenErrorMessage")
                         {
                             parameters.Add(property.Name, modelPropertyNameValue);
                         }
@@ -146,7 +149,9 @@ namespace Repository
                                     IPAddressRange = reader.GetString(reader.GetOrdinal("IPAddressRange")),
                                     ReturnUrl = reader.GetString(reader.GetOrdinal("ReturnUrl")),
                                     ApiStatus = reader.GetInt32(reader.GetOrdinal("ApiStatus")),
-                                    ApiStatusText = reader.GetString(reader.GetOrdinal("ApiStatusText"))
+                                    ApiStatusText = reader.GetString(reader.GetOrdinal("ApiStatusText")),
+                                    Tokencode = reader.GetString(reader.GetOrdinal("Tokencode")),
+                                    CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
                                     // Map other columns as needed
                                 };
 

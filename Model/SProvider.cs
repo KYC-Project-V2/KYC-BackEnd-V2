@@ -38,5 +38,6 @@ namespace Model
         public string? SaltKey { get; set; }
         public string? RequestErrorMessage { get; set; }
         public string? TokenErrorMessage { get; set; }
+        public string? Tokencode { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Model;
+﻿using Microsoft.IdentityModel.Tokens;
+using Model;
 using Org.BouncyCastle.Asn1.X509;
 using Repository;
 
@@ -23,6 +24,7 @@ namespace Service
         }
         public override async Task<SProvider> Get(SProvider sprovider)
         {
+            sprovider.RequestToken = KYCUtility.encrypt(sprovider.RequestToken, sprovider.SaltKey);
             var response = await Repository.Get(sprovider);
             return response;
         }
@@ -30,29 +32,39 @@ namespace Service
         {
             Random generator = new Random();
             int random = generator.Next(1, 1000000);
-            if(string.IsNullOrEmpty(sprovider.RequestNumber))
-            sprovider.RequestNumber = "KYC-" + DateTime.Now.ToString("MMddyyyy") + "-" + random.ToString().PadLeft(3, '0');
+            string requestnumber = string.Empty;
+            if (string.IsNullOrEmpty(sprovider.RequestNumber))
+            {
+                sprovider.RequestNumber = "KYC-" + DateTime.Now.ToString("MMddyyyy") + "-" + random.ToString().PadLeft(3, '0');
+            }
+            else
+            {
+                requestnumber=sprovider.RequestNumber;
+            }
             if (string.IsNullOrEmpty(sprovider.RequestToken))
-                sprovider.RequestToken = KYCUtility.GenerateRandomString(10);
-            //sprovider.RequestNumber = KYCUtility.encrypt(sprovider.RequestNumber, sprovider.SaltKey);
-            sprovider.RequestToken = KYCUtility.encrypt(sprovider.RequestToken, sprovider.SaltKey);
+                sprovider.RequestToken = KYCUtility.encrypt(KYCUtility.GenerateRandomString(10), sprovider.SaltKey);
+            else
+                sprovider.RequestToken = sprovider.RequestToken;
             sprovider.PAN = KYCUtility.encrypt(sprovider.PAN, sprovider.SaltKey);
             sprovider.GST = KYCUtility.encrypt(sprovider.GST, sprovider.SaltKey);
             sprovider.CreatedDate = DateTime.Now;
+            if(string.IsNullOrEmpty(requestnumber))
+            sprovider.Tokencode = sprovider.Tokencode + KYCUtility.encrypt("RequestNumber=" + sprovider.RequestNumber + "&TokenNumber=" + KYCUtility.decrypt(sprovider.RequestToken, sprovider.SaltKey), sprovider.SaltKey);
             var reposnse = await Repository.Post(sprovider);
             if(reposnse != null && reposnse.ProviderId!=null && reposnse.ProviderId != 0)
             {
-                SendEmail(reposnse);
+                SendEmail(reposnse, requestnumber);
             }
             return reposnse;
         }
-        private async void SendEmail(SProvider sprovider)
+        private async void SendEmail(SProvider sprovider, string requestnumber)
         {
             var templateconfigResponse = await _templateConfigurationservice.Get(7);
             var templateconfig = templateconfigResponse.FirstOrDefault();
             var emailBody = templateconfig.Body;
             emailBody = emailBody.Replace("{{name}}", sprovider.ProviderName);
             emailBody = emailBody.Replace("{{requestnumber}}", sprovider.RequestNumber);
+            emailBody = emailBody.Replace("{{transactiontype}}", !string.IsNullOrEmpty(requestnumber) ? "modified" : "received");
             var email = new Email
             {
                 ToAddress = sprovider.Email,

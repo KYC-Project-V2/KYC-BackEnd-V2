@@ -6,6 +6,7 @@ using Model;
 
 using Service;
 using System.Web;
+using Utility;
 
 namespace KYCServiceApi.Controllers
 {
@@ -31,6 +32,13 @@ namespace KYCServiceApi.Controllers
             var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
             SProvider.SaltKey = saltkey;
             var response = await _service.Get(SProvider);
+            return Ok(response);
+        }
+        [HttpGet("Tokencode")]
+        public async Task<IActionResult> Get([FromQuery] string tokencode)
+        {
+            var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
+            var response = KYCUtility.decrypt(tokencode, saltkey);
             return Ok(response);
         }
         [HttpPost]
