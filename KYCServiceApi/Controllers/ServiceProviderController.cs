@@ -17,11 +17,13 @@ namespace KYCServiceApi.Controllers
     {
         private readonly IService<SProvider> _service;
         private readonly IConfiguration _configuration;
+        IService<TemplateConfiguration> _templateConfigurationservice;
         public ServiceProviderController(
-            IService<SProvider> service, IConfiguration configuration)
+            IService<SProvider> service, IConfiguration configuration, IService<TemplateConfiguration> templateConfigurationservice)
         {
             _service = service;
             _configuration = configuration;
+            _templateConfigurationservice = templateConfigurationservice;
         }
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string requestNumber, string requestToken)
@@ -42,12 +44,35 @@ namespace KYCServiceApi.Controllers
             return Ok(response);
         }
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] SProvider requestOrigin)
+        public async Task<IActionResult> Post([FromBody] SProvider sprovider)
         {
             var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
-            requestOrigin.SaltKey=saltkey;
-            var response = await _service.Post(requestOrigin);
+            sprovider.SaltKey=saltkey;
+            var response = await _service.Post(sprovider);
             return Ok(response);
+        }
+        [HttpPost("APIDownload")]
+        public async Task<IActionResult> Post([FromBody] APIDownload apiDownload)
+        {
+            var templateconfigResponse = await _templateConfigurationservice.Get(8);
+            var templateconfig = templateconfigResponse.FirstOrDefault();
+            var apidownloadBody = templateconfig.Body;
+            apidownloadBody = apidownloadBody.Replace("{{stageurl}}", apiDownload.UIStgPath);
+            apidownloadBody = apidownloadBody.Replace("{{produrl}}", apiDownload.UIPrdPath);
+
+            apidownloadBody = apidownloadBody.Replace("{{apistageurl}}", apiDownload.APIStgPath);
+            apidownloadBody = apidownloadBody.Replace("{{apiprodurl}}", apiDownload.APIPrdPath);
+
+            var apidownloadFilePath = KYCUtility.CreatePdfWithHtmlContentAPIDownload(apidownloadBody).Result;
+            // Check if the file exists
+            if (!System.IO.File.Exists(apidownloadFilePath))
+            {
+                return NotFound(); // Return a 404 Not Found response if the file doesn't exist
+            }
+
+            // Return the file as a download
+            return PhysicalFile(apidownloadFilePath, "application/pdf", "APIDownload.pdf");
+            //return Ok("Success");
         }
 
     }

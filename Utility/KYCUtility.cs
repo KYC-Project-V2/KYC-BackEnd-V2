@@ -20,6 +20,7 @@ using System.Drawing.Printing;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Utility
 {
@@ -473,7 +474,51 @@ namespace Utility
 
             return filePath;
         }
-        
+        public static async Task<string> CreatePdfWithHtmlContentAPIDownload(string htmlContent)
+        {
+            // HTML content to be converted to PDF
+            //htmlContent = "<html><body><div>Hello, World! This is a PDF created using iTextSharp.</div></body></html>";
+
+            // File path where the PDF will be saved
+            var folderName = Path.Combine("Document");
+            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+            var dateToUse = DateTime.Now;
+            var apiId = new DateTimeOffset(dateToUse).ToUnixTimeSeconds().ToString();
+            if (!Directory.Exists(pathToSave))
+            {
+                Directory.CreateDirectory(pathToSave);
+            }
+
+            string filePath = Path.Combine(pathToSave, "APIDownload_"+ apiId + ".pdf");
+
+            // Create a MemoryStream to hold the PDF content
+            using (MemoryStream outputStream = new MemoryStream())
+            {
+                // Create a Document
+                Document document = new Document();
+                PdfWriter writer = PdfWriter.GetInstance(document, outputStream);
+
+                // Open the document
+                document.Open();
+
+                // Create an XMLWorkerHelper instance
+                XMLWorkerHelper worker = XMLWorkerHelper.GetInstance();
+
+                // Parse the HTML content and write it to the PDF document
+                using (StringReader htmlReader = new StringReader(htmlContent))
+                {
+                    worker.ParseXHtml(writer, document, htmlReader);
+                }
+
+                // Close the document
+                document.Close();
+
+                // Save the PDF content to the file
+                File.WriteAllBytes(filePath, outputStream.ToArray());
+            }
+
+            return filePath;
+        }
 
         public static string GenerateRandomString(int length)
         {

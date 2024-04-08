@@ -107,7 +107,8 @@ namespace Repository
                     foreach (var property in modelProperties)
                     {
                         var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" && property.Name != "ApiStatusText" && property.Name != "RequestErrorMessage" 
+                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" 
+                            && property.Name != "ApiStatusText" && property.Name != "RequestErrorMessage"
                             && property.Name != "TokenErrorMessage")
                         {
                             parameters.Add(property.Name, modelPropertyNameValue);
