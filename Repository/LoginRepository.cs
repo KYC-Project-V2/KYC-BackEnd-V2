@@ -45,7 +45,7 @@ namespace Repository
                     }
                     connection.Close();
                 }
-                if (decodePwd != model.Password)
+                if (decodePwd != model.Password && userDetail != null)
                 {
                     response = new LoginUser();
                     response.ErrorMessage = "Invalid UserId or Password";
