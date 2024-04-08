@@ -24,19 +24,26 @@ namespace Model
         public int ZipCode { get; set; }
         public int RequestTypeId { get; set; }
         public string CustomerStatus { get; set; }
+        public string AdharOCRInformation { get; set; }
+        public string PanOCRInformation { get; set; }
+        public DateTime RequestedDate { get; set; }
+        public DateTime ExpireDate { get; set; }    
         public string? ErrorMessage { get; set;}
 
     }
     public class CustomerList
     {
         public string RequestNo { get; set; }
+        public string DomainName { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Phone { get; set; }
+        public string Status { get; set; }
+        public string CertificateStatus { get; set; }
         public string? ErrorMessage { get; set; }
     }
-    //public class UserDetailResponse {
-    //    public string UserId { get; set; }
-    //    public string Message { get; set; }
-
-    //}
+    public class CustomerRequest
+    {
+        public string RequestNo { get; set; }       
+    }
+    
 }

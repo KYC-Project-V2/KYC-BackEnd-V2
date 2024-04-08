@@ -20,11 +20,11 @@ namespace KYCServiceApi.Controllers
         }
 
         // GET single user/5
-        [HttpGet("{requestNo}")]
+        [HttpPost]
         [Route("GetCustomer")]
-        public async Task<IActionResult> GetCustomer(string requestNo)
+        public async Task<IActionResult> GetCustomer(CustomerRequest customerRequest)
         {
-            var response = await _service.Get(requestNo);
+            var response = await _service.Get(customerRequest.RequestNo);
             return Ok(response);
         }
 
