@@ -22,9 +22,9 @@ namespace Service
             var response = await Repository.Get(Id);
             if (response == null)
             {
-                var loginUser = new UserDetail();
-                loginUser.ErrorMessage = "No User Found";
-                return loginUser;
+                var user = new UserDetail();
+                user.ErrorMessage = "No User Found";
+                return user;
             }
             return response;
         }

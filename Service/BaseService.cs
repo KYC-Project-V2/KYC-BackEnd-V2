@@ -20,7 +20,10 @@ namespace Service
         {
             return await Repository.UpdateUser(model);
         }
-
+        public virtual async Task<List<CustomerList>> GetAllCustomer()
+        {
+            return await Repository.GetAllCustomer();
+        }
         public virtual Task<bool> Delete(T model)
         {
             throw new NotImplementedException();
@@ -71,6 +74,6 @@ namespace Service
             throw new NotImplementedException();
         }
 
-       
+        
     }
 }

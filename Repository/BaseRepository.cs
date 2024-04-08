@@ -113,5 +113,10 @@ namespace Repository
         {
             throw new NotImplementedException();
         }
+
+        public virtual Task<List<CustomerList>> GetAllCustomer()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
