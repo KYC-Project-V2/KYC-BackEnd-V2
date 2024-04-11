@@ -118,5 +118,10 @@ namespace Repository
         {
             throw new NotImplementedException();
         }
+
+        public virtual Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

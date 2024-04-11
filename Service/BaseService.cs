@@ -24,6 +24,10 @@ namespace Service
         {
             return await Repository.GetAllCustomer();
         }
+        public virtual async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model)
+        {
+            return await Repository.UpdateKYCCustomerDetails(model);
+        }
         public virtual Task<bool> Delete(T model)
         {
             throw new NotImplementedException();

@@ -13,21 +13,23 @@ namespace Model
         public string RequesterName { get; set; }
         public bool PanVerificationStatus { get; set; }
         public bool AddharVerificationStatus { get; set; }
-        public string Address { get; set; }
+        //public string Address { get; set; }
         public string Phone { get; set; }
         public string PanId { get; set; }
         public string AadharId { get; set; }        
-        public int StateId { get; set; }        
-        public string City { get; set; }
+        //public int StateId { get; set; }        
+        //public string City { get; set; }
         public string Email { get; set; }
        
-        public int ZipCode { get; set; }
+       // public int ZipCode { get; set; }
         public int RequestTypeId { get; set; }
         public string CustomerStatus { get; set; }
         public string AdharOCRInformation { get; set; }
         public string PanOCRInformation { get; set; }
         public DateTime RequestedDate { get; set; }
-        public DateTime ExpireDate { get; set; }    
+        public DateTime ExpireDate { get; set; }
+        public string Comments { get; set; }
+        public string LoggedInUserId { get; set; }
         public string? ErrorMessage { get; set;}
 
     }
@@ -40,6 +42,20 @@ namespace Model
         public string Status { get; set; }
         public string CertificateStatus { get; set; }
         public string? ErrorMessage { get; set; }
+    }
+    public class CustomerUpdate
+    {
+        public string RequestNo { get; set; }
+        public bool AddharVerificationStatus { get; set; }
+        public bool PanVerificationStatus { get; set; }
+        public string Email { get; set; }
+        public string LoggedInUserId { get; set; }
+        public string Comments { get; set; }
+    }
+    public class CustomerResponse
+    {
+        public string Message { get; set; }
+        
     }
     public class CustomerRequest
     {

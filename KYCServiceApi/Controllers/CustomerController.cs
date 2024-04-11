@@ -38,20 +38,14 @@ namespace KYCServiceApi.Controllers
             return Ok(response);
         }
 
-        //[HttpPost]
-        //[Route("AddUser")]
-        //public async Task<IActionResult> AddUser([FromBody] UserDetail userDetail)
-        //{
-        //    var response = await _service.AddUser(userDetail);
-        //    return Ok(response);
-        //}
+        [HttpPost]
+        [Route("UpdateKYCCustomerDetails")]
+        public async Task<IActionResult> UpdateKYCCustomerDetaiuls([FromBody] CustomerUpdate customerUpdate)
+        {
+            var response = await _service.UpdateKYCCustomerDetails(customerUpdate);
+            return Ok(response);
+        }
 
-        //[HttpPut]
-        //[Route("UpdateUser")]
-        //public async Task<IActionResult> Put([FromBody] UserDetail userDetail)
-        //{
-        //    var response = await _service.UpdateUser(userDetail);
-        //    return Ok(response);
-        //}
+        
     }
 }

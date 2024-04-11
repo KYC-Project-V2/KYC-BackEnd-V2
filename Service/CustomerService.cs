@@ -1,13 +1,5 @@
-﻿using iTextSharp.text;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.IdentityModel.Tokens;
-using Model;
+﻿using Model;
 using Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service
 {
@@ -22,9 +14,9 @@ namespace Service
             var response = await Repository.Get(Id);
             if (response == null)
             {
-                var loginUser = new CustomerDetail();
-                loginUser.ErrorMessage = "No User Found";
-                return loginUser;
+                var customer = new CustomerDetail();
+                customer.ErrorMessage = "No User Found";
+                return customer;
             }
             return response;
         }
@@ -46,17 +38,17 @@ namespace Service
             return response;
         }
 
-        //public override async Task<UserDetailResponse> AddUser(UserDetail userDetail)
-        //{
-        //    var response = await Repository.AddUser(userDetail);
-            
-        //    if (response==null)
-        //    {
-        //        response = new UserDetailResponse();
-        //        response.Message = "User Creation Failed";
-        //    }
-        //    return response;
-        //}
+        public override async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate customerUpdate)
+        {
+            var response = await Repository.UpdateKYCCustomerDetails(customerUpdate);
+
+            if (response == null)
+            {
+                response = new CustomerResponse();
+                response.Message = "KYC Verification is Failed";
+            }
+            return response;
+        }
 
         //public override async Task<UserDetailResponse> UpdateUser(UserDetail userDetail)
         //{
