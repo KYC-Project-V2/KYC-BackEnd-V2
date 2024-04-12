@@ -46,6 +46,7 @@ namespace Model
     public class CustomerUpdate
     {
         public string RequestNo { get; set; }
+        public string RequesterName { get; set; }
         public bool AddharVerificationStatus { get; set; }
         public bool PanVerificationStatus { get; set; }
         public string Email { get; set; }

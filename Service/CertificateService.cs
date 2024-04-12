@@ -31,5 +31,10 @@ namespace Service
             var response = await Repository.Get(name);
             return response;
         }
+        public override async Task<List<Certificate>> GetCertificate(string requestNo, bool certificateType)
+        {
+            var response = await Repository.GetCertificate(requestNo, certificateType);
+            return response;
+        }
     }
 }

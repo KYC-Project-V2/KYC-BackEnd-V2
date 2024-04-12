@@ -108,5 +108,29 @@ namespace Repository
             }
             return certificate;
         }
+
+        public override async Task<List<Certificate>> GetCertificate(string requestNo, bool certificateType)
+        {
+            List<Certificate> models = new List<Certificate>();
+            var storedProcedureName = "GetCertificateDataForEmail";
+            using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
+                {
+                    command.Parameters.Add(new SqlParameter("@RequestNumber", requestNo));
+                    command.Parameters.Add(new SqlParameter("@CertificateType", certificateType));
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        var model = Load<Certificate>(reader);
+                        model.ExpiredOn = Math.Round((model.ExpireDate - System.DateTime.Now).TotalDays).ToString();
+                        models.Add(model);
+                    }
+                }
+            }
+
+            return models;
+        }
     }
 }

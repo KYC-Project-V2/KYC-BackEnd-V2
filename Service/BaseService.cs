@@ -48,6 +48,10 @@ namespace Service
             return await Repository.Get(value);
             //throw new NotImplementedException();
         }
+        public virtual async Task<List<T>> GetCertificate(string requestNo, bool certificateType)
+        {
+            return await Repository.GetCertificate(requestNo, certificateType);
+        }
         public virtual async Task<T> Get(bool value)
         {
             throw new NotImplementedException();
@@ -78,6 +82,6 @@ namespace Service
             throw new NotImplementedException();
         }
 
-        
+       
     }
 }

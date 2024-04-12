@@ -123,5 +123,10 @@ namespace Repository
         {
             throw new NotImplementedException();
         }
+
+        public virtual Task<List<T>> GetCertificate(string requestNo, bool certificateType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
