@@ -51,17 +51,33 @@ namespace KYCServiceApi.Controllers
             var response = await _service.Post(sprovider);
             return Ok(response);
         }
-        [HttpPost("APIDownload")]
-        public async Task<IActionResult> Post([FromBody] APIDownload apiDownload)
+        [HttpGet("APIDownload")]
+        public async Task<IActionResult> Post([FromQuery] string tokencode)
         {
+            var isprod = _configuration.GetValue<bool>("IsProd");
+            var kycweburl = _configuration.GetValue<string>("KYCWebUrl");
+            var kycapiurl = _configuration.GetValue<string>("KYCAPIUrl");
+
             var templateconfigResponse = await _templateConfigurationservice.Get(8);
             var templateconfig = templateconfigResponse.FirstOrDefault();
             var apidownloadBody = templateconfig.Body;
-            apidownloadBody = apidownloadBody.Replace("{{stageurl}}", apiDownload.UIStgPath);
-            apidownloadBody = apidownloadBody.Replace("{{produrl}}", apiDownload.UIPrdPath);
 
-            apidownloadBody = apidownloadBody.Replace("{{apistageurl}}", apiDownload.APIStgPath);
-            apidownloadBody = apidownloadBody.Replace("{{apiprodurl}}", apiDownload.APIPrdPath);
+            if(isprod)
+            {
+                apidownloadBody = apidownloadBody.Replace("{{stageurl}}", string.Empty);
+                apidownloadBody = apidownloadBody.Replace("{{produrl}}", kycweburl + "/welcomerequest?id=" + tokencode);
+
+                apidownloadBody = apidownloadBody.Replace("{{apistageurl}}", string.Empty);
+                apidownloadBody = apidownloadBody.Replace("{{apiprodurl}}", kycapiurl + "/ServiceProvider/Tokencode?tokencode=" + tokencode);
+            }
+            else
+            {
+                apidownloadBody = apidownloadBody.Replace("{{stageurl}}", kycweburl + "/welcomerequest?id=" + tokencode);
+                apidownloadBody = apidownloadBody.Replace("{{produrl}}", string.Empty);
+
+                apidownloadBody = apidownloadBody.Replace("{{apistageurl}}", kycapiurl + "/ServiceProvider/Tokencode?tokencode=" + tokencode);
+                apidownloadBody = apidownloadBody.Replace("{{apiprodurl}}", string.Empty);
+            }
 
             var apidownloadFilePath = KYCUtility.CreatePdfWithHtmlContentAPIDownload(apidownloadBody).Result;
             // Check if the file exists
@@ -74,6 +90,5 @@ namespace KYCServiceApi.Controllers
             return PhysicalFile(apidownloadFilePath, "application/pdf", "APIDownload.pdf");
             //return Ok("Success");
         }
-
     }
 }

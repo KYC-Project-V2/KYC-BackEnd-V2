@@ -21,6 +21,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Utility
 {
@@ -533,6 +534,54 @@ namespace Utility
             }
 
             return sb.ToString();
+        }
+        public static byte[] GetX509Certificate(Model.X509Certificate certificate)
+        {
+            // Create a root CA certificate
+            X509Certificate2 caCertificate = CreateCACertificate("cn=Astitvatech.com ,O=Astitvatech, L=Delhi, S=Delhi, C=IN");
+
+            //using (X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+            //{
+            //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
+            //    store?.Add(caCertificate);
+            //}
+            // Create a personal certificate signed by the CA
+            X509Certificate2 personalCertificate = CreatePersonalCertificate("CN=" + certificate.DomainName, caCertificate, certificate.IsProvisional);
+            //using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
+            //{
+            //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
+            //    store?.Add(personalCertificate);
+            //}
+
+            byte[] certBytes = personalCertificate.Export(X509ContentType.Cert);
+            return certBytes;
+        }
+        static X509Certificate2 CreateCACertificate(string subjectName)
+        {
+            using (RSA rsa = RSA.Create(2048))
+            {
+                var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+                request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
+                request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
+
+                var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(0), DateTimeOffset.UtcNow.AddYears(10));
+                return new X509Certificate2(certificate.Export(X509ContentType.Pfx), "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+            }
+        }
+
+        static X509Certificate2 CreatePersonalCertificate(string subjectName, X509Certificate2 caCertificate, bool isProvisional)
+        {
+            using (RSA rsa = RSA.Create(2048))
+            {
+                var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+                request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
+                request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
+
+                var certificate = request.Create(caCertificate,DateTimeOffset.UtcNow.AddDays(0), isProvisional ?  DateTimeOffset.UtcNow.AddMonths(1) : DateTimeOffset.UtcNow.AddYears(1), new byte[20]);
+                return new X509Certificate2(certificate.Export(X509ContentType.Pfx), "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+            }
         }
     }
 }

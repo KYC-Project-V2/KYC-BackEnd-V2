@@ -4,6 +4,7 @@ using Repository;
 using System.Text;
 using Utility;
 using System.Security.Cryptography;
+using System.Net.WebSockets;
 
 namespace Service
 {
@@ -352,7 +353,7 @@ namespace Service
             if (domains != null && domains.Any())
             {
                 Certificate certificate;
-                var expiryDate = DateTime.Now.AddYears(1);
+                var expiryDate = DateTime.Now.AddMonths(1);
                 //TODO: Remove hardcode value 3
                 var templateConfigurations = await _templateConfigurationservice.Get(3);
                 var expiryTemplteConfig = templateConfigurations.FirstOrDefault();
@@ -363,12 +364,16 @@ namespace Service
                 //var nextEmailTiggeringDate = expiryDate.AddDays(Convert.ToInt32(days));
                 foreach (var domain in domains)
                 {
+                    var x509certificate = new X509Certificate();
+                    x509certificate.IsProvisional = true;
+                    x509certificate.DomainName = domain.Name;
+                    string certificateresult = Convert.ToBase64String(KYCUtility.GetX509Certificate(x509certificate));
                     certificate = new Certificate();
                     certificate.DomainId = domain.Id;
                     certificate.DomainName = domain.Name;
                     certificate.RequestNumber = domain.RequestNumber;
                     certificate.CreatedDate = DateTime.Now;
-                    certificate.Certificates = ComputeStringToSha256Hash(domain.Name);
+                    certificate.Certificates = certificateresult; //ComputeStringToSha256Hash(domain.Name);
                     certificate.ExpireDate = expiryDate;
                     certificate.CreatedBy = "";
                     //certificate.NextEmailTiggeringDate = nextEmailTiggeringDate;

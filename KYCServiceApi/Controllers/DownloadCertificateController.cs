@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using Model;
 using Service;
 using System.Reflection;
 using System.Text;
+using Utility;
 
 namespace KYCServiceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class DownloadCertificateController : BaseController
     {
         private readonly IService<RequestVerification> _service;
@@ -56,5 +59,14 @@ namespace KYCServiceApi.Controllers
             sb.Append("Verified by AstitvaTech.com");
             return Ok(sb.ToString());
         }
-    }
+        [HttpPost, Route("X509Certificate")]
+        public async Task<IActionResult> GetX509Certificate([FromBody] X509Certificate certificate)
+        {
+            var apidownloadFilebytes = KYCUtility.GetX509Certificate(certificate);
+            MemoryStream stream = new MemoryStream(apidownloadFilebytes);
+
+            // Return the file as a download
+            return File(stream, "application/cer", certificate.RequestNumber + "_" + certificate.DomainName + ".cer");
+        }
+   }
 }

@@ -28,15 +28,15 @@ namespace KYCServiceApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post()
+        public async Task<IActionResult> Post([FromBody] Payment bypasspayment)
         {
             try
             {
                 Payment payment = new Payment();
-                var responseCode = HttpContext.Request.Form["Response Code"].ToString();
+                var responseCode = bypasspayment == null ? HttpContext.Request.Form["Response Code"].ToString() : bypasspayment.ResponseCode;
                 var redirectUrl = _configuration.GetValue<string>("KYCWebUrl");
                 //var redirectUrl = paymentConfiguration.AppRedirectUrl;
-                var optionalFields = HttpContext.Request.Form["optional fields"].ToString();
+                var optionalFields = bypasspayment == null ? HttpContext.Request.Form["optional fields"].ToString() : bypasspayment.OptionalFields;
                 var requestNumber = optionalFields.Split('|')[0];
                 var paymentConfiguration = await _paymentCongurationService.Get(true);
                 var secreteKey = paymentConfiguration.AccessCode;
@@ -45,22 +45,25 @@ namespace KYCServiceApi.Controllers
                 {
 
                     payment.ResponseCode = responseCode;
-                    payment.UniqueRefNumber = HttpContext.Request.Form["Unique Ref Number"].ToString();
-                    payment.ServiceTaxAmount = HttpContext.Request.Form["Service Tax Amount"].ToString();
-                    payment.ProcessingFeeAmount = HttpContext.Request.Form["Processing Fee Amount"].ToString();
-                    payment.TotalAmount = HttpContext.Request.Form["Total Amount"].ToString();
-                    payment.TransactionAmount = HttpContext.Request.Form["Transaction Amount"].ToString();
+                    payment.UniqueRefNumber = bypasspayment == null ? HttpContext.Request.Form["Unique Ref Number"].ToString() : bypasspayment.UniqueRefNumber;
+                    payment.ServiceTaxAmount = bypasspayment == null ? HttpContext.Request.Form["Service Tax Amount"].ToString() : bypasspayment.ServiceTaxAmount;
+                    payment.ProcessingFeeAmount = bypasspayment == null ? HttpContext.Request.Form["Processing Fee Amount"].ToString() : bypasspayment.ProcessingFeeAmount;
+                    payment.TotalAmount = bypasspayment == null ? HttpContext.Request.Form["Total Amount"].ToString() : bypasspayment.TotalAmount;
+                    payment.TransactionAmount = bypasspayment == null ? HttpContext.Request.Form["Transaction Amount"].ToString() : bypasspayment.TransactionAmount;
 
-                    var transactionDate = HttpContext.Request.Form["Transaction Date"].ToString();
-                    payment.TransactionDate = !string.IsNullOrEmpty(transactionDate) ? DateTime.ParseExact(transactionDate, "dd-MM-yyyy HH:mm:ss", new System.Globalization.CultureInfo("en-US")) : null;
-                    payment.InterchangeValue = HttpContext.Request.Form["Interchange Value"].ToString();
-                    payment.PaymentMode = HttpContext.Request.Form["Payment Mode"].ToString();
-                    payment.SubMerchantId = HttpContext.Request.Form["SubMerchantId"].ToString();
-                    payment.ReferenceNo = HttpContext.Request.Form["ReferenceNo"].ToString();
-                    payment.ID = HttpContext.Request.Form["ID"].ToString();
-                    payment.RS = HttpContext.Request.Form["RS"].ToString();
-                    payment.TPS = HttpContext.Request.Form["TPS"].ToString();
-                    payment.MandatoryFields = HttpContext.Request.Form["mandatory fields"].ToString();
+                    var transactionDate = bypasspayment == null ? HttpContext.Request.Form["Transaction Date"].ToString() : bypasspayment.TransactionDate.ToString();
+                    try
+                    {
+                        payment.TransactionDate = !string.IsNullOrEmpty(transactionDate) ? DateTime.ParseExact(transactionDate, "dd-MM-yyyy HH:mm:ss", new System.Globalization.CultureInfo("en-US")) : null;
+                    } catch{}
+                    payment.InterchangeValue = bypasspayment == null ? HttpContext.Request.Form["Interchange Value"].ToString() : bypasspayment.InterchangeValue;
+                    payment.PaymentMode = bypasspayment == null ? HttpContext.Request.Form["Payment Mode"].ToString() : bypasspayment.PaymentMode;
+                    payment.SubMerchantId = bypasspayment == null ? HttpContext.Request.Form["SubMerchantId"].ToString() : bypasspayment.SubMerchantId;
+                    payment.ReferenceNo = bypasspayment == null ? HttpContext.Request.Form["ReferenceNo"].ToString() : bypasspayment.ReferenceNo;
+                    payment.ID = bypasspayment == null ? HttpContext.Request.Form["ID"].ToString() : bypasspayment.ID;
+                    payment.RS = bypasspayment == null ? HttpContext.Request.Form["RS"].ToString() : bypasspayment.RS;
+                    payment.TPS = bypasspayment == null ? HttpContext.Request.Form["TPS"].ToString() : bypasspayment.TPS;
+                    payment.MandatoryFields = bypasspayment == null ? HttpContext.Request.Form["mandatory fields"].ToString() : bypasspayment.MandatoryFields;
                     payment.OptionalFields = optionalFields;
                     payment.RequestNumber = requestNumber;
 
@@ -85,8 +88,10 @@ namespace KYCServiceApi.Controllers
 
                 redirectUrl = redirectUrl + $"/kycverification?rc={responseCode}&rn={requestNumber}&pid={paymentId}";
 
-
-                return Redirect(redirectUrl);
+                if (bypasspayment is null)
+                   return Redirect(redirectUrl);
+                else
+                    return Ok(redirectUrl);
             }
             catch (Exception ex)
             {
