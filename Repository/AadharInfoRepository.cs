@@ -59,7 +59,7 @@ namespace Repository
                                 break;
                             default:
                                 var modelPropertyValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                                if (modelPropertyValue != null)
+                                if (modelPropertyValue != null &&   property.Name != "IsVaidDocumentType")
                                 {
                                     parameters.Add(property.Name, modelPropertyValue);
 
@@ -75,14 +75,21 @@ namespace Repository
                             command.Parameters.Add(new SqlParameter($"{f.Key}", f.Value));
                         }
                     }
-
-                    using (var response = command.ExecuteReaderAsync())
+                    try
                     {
-                        while (await response.Result.ReadAsync())
+                        using (var response = command.ExecuteReaderAsync())
                         {
-                            aadharInfo = Load<AadharInfo>((IDataReader)response);
+                            while (await response.Result.ReadAsync())
+                            {
+                                aadharInfo = Load<AadharInfo>((IDataReader)response);
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    
                 }
             }
             return aadharInfo;

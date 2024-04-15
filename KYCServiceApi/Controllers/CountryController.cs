@@ -8,19 +8,19 @@ namespace KYCServiceApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class EmailController : BaseController
+    public class CountryController : BaseController
     {
-        private readonly IService<Email> _service;
-        public EmailController(
-            IService<Email> service)
+        private readonly IService<Country> _service;
+        public CountryController(
+            IService<Country> service)
         {
             _service = service;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Email model)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            var response = await _service.Post(model);
+            var response = await _service.Get();
             return Ok(response);
         }
     }

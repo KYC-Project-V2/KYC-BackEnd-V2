@@ -79,7 +79,8 @@ namespace Service
                 FirstName = personalInfo != null ? personalInfo.FirstName : businessInfo.ContactFirstName,
                 LastName = personalInfo != null ? personalInfo.LastName : businessInfo.ContactLastName,
                 Phone = personalInfo != null ? personalInfo.Phone : businessInfo.ContactPhone,
-                Email = personalInfo != null ? personalInfo.Email : businessInfo.OfficialEmail
+                Email = personalInfo != null ? personalInfo.Email : businessInfo.OfficialEmail,
+                CertificatePath = certificate.CertificatePath,
             };
 
             var noDays = Convert.ToInt32(certificate.ExpiredOn);

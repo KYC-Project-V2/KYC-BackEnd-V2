@@ -55,7 +55,7 @@ namespace Repository
                         {
                             default:
                                 var modelPropertyValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                                if (modelPropertyValue != null)
+                                if (modelPropertyValue != null &&  property.Name != "IsVaidDocumentType")
                                 {
                                     parameters.Add(property.Name, modelPropertyValue);
 
@@ -71,14 +71,21 @@ namespace Repository
                             command.Parameters.Add(new SqlParameter($"{f.Key}", f.Value));
                         }
                     }
-
-                    using (var response = command.ExecuteReaderAsync())
+                    try
                     {
-                        while (await response.Result.ReadAsync())
+                        using (var response = command.ExecuteReaderAsync())
                         {
-                            PanCardInfo = Load<PanCardInfo>((IDataReader)response);
+                            while (await response.Result.ReadAsync())
+                            {
+                                PanCardInfo = Load<PanCardInfo>((IDataReader)response);
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+
+                    }
+                   
                 }
             }
             return PanCardInfo;

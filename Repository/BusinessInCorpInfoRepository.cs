@@ -57,7 +57,7 @@ namespace Repository
                                 break;
                             default:
                                 var modelPropertyValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                                if (modelPropertyValue != null)
+                                if (modelPropertyValue != null && property.Name != "IsVaidDocumentType")
                                 {
                                     parameters.Add(property.Name, modelPropertyValue);
 
