@@ -5,6 +5,7 @@ using System.Text;
 using Utility;
 using System.Security.Cryptography;
 using System.Net.WebSockets;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Service
 {
@@ -29,7 +30,7 @@ namespace Service
         private readonly IService<TemplateConfiguration> _templateConfigurationservice;
         private readonly IService<Certificate> _certificateService;
         private readonly IService<Domain> _domainService;
-
+        private readonly IService<RootCertificate> _rootCertificateService;
 
         public OrderService(
             IRepository<RequestOrigin> requestOriginRepository,
@@ -47,7 +48,8 @@ namespace Service
             IRepository<State> stateRepository,
             IRepository<VoterInfo> voterInfoRepository,
             IRepository<DriverLicenseInfo> driverLicenseInfoRepository,
-            IService<Domain> domainService)
+            IService<Domain> domainService,
+            IService<RootCertificate> rootCertificateService)
         {
             _requestOriginRepository = requestOriginRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -65,6 +67,7 @@ namespace Service
             _voterInfoRepository = voterInfoRepository;
             _driverLicenseInfoRepository = driverLicenseInfoRepository;
             _domainService = domainService;
+            _rootCertificateService = rootCertificateService;
         }
         public override async Task<Order> Post(Order order)
         {
@@ -364,16 +367,22 @@ namespace Service
                 //var nextEmailTiggeringDate = expiryDate.AddDays(Convert.ToInt32(days));
                 foreach (var domain in domains)
                 {
-                    var x509certificate = new X509Certificate();
+                    var x509certificate = new Model.X509Certificate();
                     x509certificate.IsProvisional = true;
                     x509certificate.DomainName = domain.Name;
-                    string certificateresult = Convert.ToBase64String(KYCUtility.GetX509Certificate(x509certificate));
+                    x509certificate.RequestNumber = order.RequestOrigin.RequestNo;
+                    var rootcertificate = await _rootCertificateService.Get(string.Empty);
+                    x509certificate.CARootPath = rootcertificate.Certificates;
+                    var apidownloadFilebytes = KYCUtility.GetX509Certificate(x509certificate);
+                    //textBox1.Text = Convert.ToBase64String(apidownloadFilebytes.CertificateBytes);
+
                     certificate = new Certificate();
                     certificate.DomainId = domain.Id;
                     certificate.DomainName = domain.Name;
                     certificate.RequestNumber = domain.RequestNumber;
                     certificate.CreatedDate = DateTime.Now;
-                    certificate.Certificates = certificateresult; //ComputeStringToSha256Hash(domain.Name);
+                    certificate.CertificatePath = Convert.ToBase64String(apidownloadFilebytes.CertificateBytes);
+                    certificate.Certificates = apidownloadFilebytes.SerialNumber; //ComputeStringToSha256Hash(domain.Name);
                     certificate.ExpireDate = expiryDate;
                     certificate.CreatedBy = "";
                     //certificate.NextEmailTiggeringDate = nextEmailTiggeringDate;

@@ -535,26 +535,45 @@ namespace Utility
 
             return sb.ToString();
         }
-        public static byte[] GetX509Certificate(Model.X509Certificate certificate)
+        public static byte[] GetX509CACertificate()
         {
             // Create a root CA certificate
             X509Certificate2 caCertificate = CreateCACertificate("cn=Astitvatech.com ,O=Astitvatech, L=Delhi, S=Delhi, C=IN");
 
-            //using (X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
-            //{
-            //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
-            //    store?.Add(caCertificate);
-            //}
+            using (X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+            {
+                store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
+                store?.Add(caCertificate);
+            }
+            byte[] certBytes = caCertificate.Export(X509ContentType.Pfx);
+            return certBytes;
+        }
+        public static Model.X509Certificate GetX509Certificate(Model.X509Certificate certificate)
+        {
+            byte[] byteArray = Convert.FromBase64String(certificate.CARootPath);
+
+            var caCertificate = new X509Certificate2(byteArray);
+
+            string serialnumber = certificate.RequestNumber.Replace("KYC-", "").Replace("-", "");
+            // Generate a new serial number for the certificate
+            byte[] serialNumberBytes = Encoding.UTF8.GetBytes(serialnumber);
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(serialNumberBytes);
+            }
+            var subjectName = "CN = " + certificate.DomainName + " ,OU = Astitvatech,O = Astitvatech,C = IN";
             // Create a personal certificate signed by the CA
-            X509Certificate2 personalCertificate = CreatePersonalCertificate("CN=" + certificate.DomainName, caCertificate, certificate.IsProvisional);
+            X509Certificate2 personalCertificate = CreatePersonalCertificate(subjectName, caCertificate, certificate.IsProvisional, serialNumberBytes);
+            // Get the public key parameters
+            //RSA publicKey = personalCertificate.GetRSAPublicKey();
             //using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
             //{
             //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
             //    store?.Add(personalCertificate);
             //}
-
-            byte[] certBytes = personalCertificate.Export(X509ContentType.Cert);
-            return certBytes;
+            certificate.SerialNumber = personalCertificate.SerialNumber;
+            certificate.CertificateBytes = personalCertificate.Export(X509ContentType.Cert);
+            return certificate;
         }
         static X509Certificate2 CreateCACertificate(string subjectName)
         {
@@ -565,13 +584,14 @@ namespace Utility
                 request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
                 request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
 
-                var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(0), DateTimeOffset.UtcNow.AddYears(10));
+                var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddYears(24));
                 return new X509Certificate2(certificate.Export(X509ContentType.Pfx), "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
             }
         }
 
-        static X509Certificate2 CreatePersonalCertificate(string subjectName, X509Certificate2 caCertificate, bool isProvisional)
+        static X509Certificate2 CreatePersonalCertificate(string subjectName, X509Certificate2 caCertificate, bool isProvisional,byte[] serialNumberBytes)
         {
+            
             using (RSA rsa = RSA.Create(2048))
             {
                 var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -579,7 +599,7 @@ namespace Utility
                 request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
                 request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
 
-                var certificate = request.Create(caCertificate,DateTimeOffset.UtcNow.AddDays(0), isProvisional ?  DateTimeOffset.UtcNow.AddMonths(1) : DateTimeOffset.UtcNow.AddYears(1), new byte[20]);
+                var certificate = request.Create(caCertificate,DateTimeOffset.UtcNow.AddDays(0), isProvisional ?  DateTimeOffset.UtcNow.AddMonths(1) : DateTimeOffset.UtcNow.AddYears(1), serialNumberBytes);
                 return new X509Certificate2(certificate.Export(X509ContentType.Pfx), "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
             }
         }

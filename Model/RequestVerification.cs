@@ -24,5 +24,7 @@ namespace Model
         public bool Status { get; set; }
         public string StatusMessgae { get; set; }
         public string HtmlBody { get; set; }
+
+        public string? CertificatePath { get; set; }
     }
 }
