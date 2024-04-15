@@ -74,6 +74,9 @@ namespace KYCServiceApi
             services.AddTransient<IService<Certificate>, CertificateService>();
             services.AddTransient<IRepository<Certificate>, CertificateRepository>();
 
+            services.AddTransient<IService<RootCertificate>, RootCertificateService>();
+            services.AddTransient<IRepository<RootCertificate>, RootCertificateRepository>();
+
             services.AddTransient<IService<APIConfiguration>, APIConfigurationService>();
             services.AddTransient<IRepository<APIConfiguration>, APIConfigurationRepository>();
 
