@@ -105,7 +105,7 @@ namespace Repository
                                 var modelPropertyValue = model.GetType().GetProperty(property.Name).GetValue(model);
                                 var searcValue = model.GetType().GetProperty(property.Name).GetValue(model);
 
-                                if (modelPropertyValue != null)
+                                if (modelPropertyValue != null && property.Name != "IsVaidDocumentType")
                                 {
                                     businessInfoDetails.Add(property.Name, modelPropertyValue);
 

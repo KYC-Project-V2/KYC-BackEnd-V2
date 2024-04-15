@@ -30,7 +30,7 @@ namespace KYCServiceApi.Controllers
                 RedirectUrl = _configuration.GetValue<string>("KYCWebUrl")
             };
             var response = await _service.Post(requestVerification);
-            return Ok(response.HtmlBody);
+            return Ok(response?.HtmlBody);
         }
 
         [HttpGet, Route("details")]

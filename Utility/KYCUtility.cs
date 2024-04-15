@@ -20,6 +20,8 @@ using System.Drawing.Printing;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Utility
 {
@@ -139,7 +141,9 @@ namespace Utility
                 return resultStream.ToArray();
             }
         }
+        
 
+       
         public static XMLResponse XmlToJson(string xml)
         {
             XMLResponse xmlResponse = new();
@@ -471,6 +475,133 @@ namespace Utility
 
             return filePath;
         }
+        public static async Task<string> CreatePdfWithHtmlContentAPIDownload(string htmlContent)
+        {
+            // HTML content to be converted to PDF
+            //htmlContent = "<html><body><div>Hello, World! This is a PDF created using iTextSharp.</div></body></html>";
 
+            // File path where the PDF will be saved
+            var folderName = Path.Combine("Document");
+            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+            var dateToUse = DateTime.Now;
+            var apiId = new DateTimeOffset(dateToUse).ToUnixTimeSeconds().ToString();
+            if (!Directory.Exists(pathToSave))
+            {
+                Directory.CreateDirectory(pathToSave);
+            }
+
+            string filePath = Path.Combine(pathToSave, "APIDownload_"+ apiId + ".pdf");
+
+            // Create a MemoryStream to hold the PDF content
+            using (MemoryStream outputStream = new MemoryStream())
+            {
+                // Create a Document
+                Document document = new Document();
+                PdfWriter writer = PdfWriter.GetInstance(document, outputStream);
+
+                // Open the document
+                document.Open();
+
+                // Create an XMLWorkerHelper instance
+                XMLWorkerHelper worker = XMLWorkerHelper.GetInstance();
+
+                // Parse the HTML content and write it to the PDF document
+                using (StringReader htmlReader = new StringReader(htmlContent))
+                {
+                    worker.ParseXHtml(writer, document, htmlReader);
+                }
+
+                // Close the document
+                document.Close();
+
+                // Save the PDF content to the file
+                File.WriteAllBytes(filePath, outputStream.ToArray());
+            }
+
+            return filePath;
+        }
+
+        public static string GenerateRandomString(int length)
+        {
+            Random random = new Random();
+            const string alphanumericChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder sb = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                int index = random.Next(alphanumericChars.Length);
+                sb.Append(alphanumericChars[index]);
+            }
+
+            return sb.ToString();
+        }
+        public static byte[] GetX509CACertificate()
+        {
+            // Create a root CA certificate
+            X509Certificate2 caCertificate = CreateCACertificate("cn=Astitvatech.com ,O=Astitvatech, L=Delhi, S=Delhi, C=IN");
+
+            using (X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+            {
+                store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
+                store?.Add(caCertificate);
+            }
+            byte[] certBytes = caCertificate.Export(X509ContentType.Pfx);
+            return certBytes;
+        }
+        public static Model.X509Certificate GetX509Certificate(Model.X509Certificate certificate)
+        {
+            byte[] byteArray = Convert.FromBase64String(certificate.CARootPath);
+
+            var caCertificate = new X509Certificate2(byteArray);
+
+            string serialnumber = certificate.RequestNumber.Replace("KYC-", "").Replace("-", "");
+            // Generate a new serial number for the certificate
+            byte[] serialNumberBytes = Encoding.UTF8.GetBytes(serialnumber);
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(serialNumberBytes);
+            }
+            var subjectName = "CN = " + certificate.DomainName + " ,OU = Astitvatech,O = Astitvatech,C = IN";
+            // Create a personal certificate signed by the CA
+            X509Certificate2 personalCertificate = CreatePersonalCertificate(subjectName, caCertificate, certificate.IsProvisional, serialNumberBytes);
+            // Get the public key parameters
+            //RSA publicKey = personalCertificate.GetRSAPublicKey();
+            //using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
+            //{
+            //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
+            //    store?.Add(personalCertificate);
+            //}
+            certificate.SerialNumber = personalCertificate.SerialNumber;
+            certificate.CertificateBytes = personalCertificate.Export(X509ContentType.Cert);
+            return certificate;
+        }
+        static X509Certificate2 CreateCACertificate(string subjectName)
+        {
+            using (RSA rsa = RSA.Create(2048))
+            {
+                var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+                request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
+                request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
+
+                var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddYears(24));
+                return new X509Certificate2(certificate.Export(X509ContentType.Pfx), "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+            }
+        }
+
+        static X509Certificate2 CreatePersonalCertificate(string subjectName, X509Certificate2 caCertificate, bool isProvisional,byte[] serialNumberBytes)
+        {
+            
+            using (RSA rsa = RSA.Create(2048))
+            {
+                var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+                request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
+                request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
+
+                var certificate = request.Create(caCertificate,DateTimeOffset.UtcNow.AddDays(0), isProvisional ?  DateTimeOffset.UtcNow.AddMonths(1) : DateTimeOffset.UtcNow.AddYears(1), serialNumberBytes);
+                return new X509Certificate2(certificate.Export(X509ContentType.Pfx), "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+            }
+        }
     }
 }

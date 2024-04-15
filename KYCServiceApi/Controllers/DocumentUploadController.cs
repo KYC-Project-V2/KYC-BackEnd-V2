@@ -101,7 +101,7 @@ namespace KYCServiceApi.Controllers
                             break;
                         case "BusinessDocument":
                             documentDetail.OCRInformation = await KYCUtility.TessaractOCR(fullPath);
-                            if (documentDetail.OCRInformation.Contains("BusinessDocument") || documentDetail.OCRInformation.Contains("Business Document"))
+                            if (documentDetail.OCRInformation.Contains("BusinessDocument") || documentDetail.OCRInformation.Contains("Business Document") || documentDetail.OCRInformation.Contains("Form GST"))
                             {
                                 documentDetail.IsVaidDocumentType = true;
                             }

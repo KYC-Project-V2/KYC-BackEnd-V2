@@ -1,24 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using Model;
 using Service;
 using System.Reflection;
 using System.Text;
+using Utility;
 
 namespace KYCServiceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class DownloadCertificateController : BaseController
     {
         private readonly IService<RequestVerification> _service;
+        private readonly IService<RootCertificate> _rootCertificateService;
         private readonly IConfiguration _configuration;
-
+        private readonly IService<Certificate> _certificateService;
         public DownloadCertificateController(
-            IService<RequestVerification> service, IConfiguration configuration)
+            IService<RequestVerification> service, IConfiguration configuration, IService<RootCertificate> rootCertificateService, IService<Certificate> certificateService)
         {
             _service = service;
             _configuration = configuration;
+            _rootCertificateService = rootCertificateService;
+            _certificateService = certificateService;
         }
 
         [HttpGet]
@@ -56,5 +62,37 @@ namespace KYCServiceApi.Controllers
             sb.Append("Verified by AstitvaTech.com");
             return Ok(sb.ToString());
         }
-    }
+        [HttpGet, Route("DownloadCACertificate")]
+        public async Task<IActionResult> CreateX509CACertificate()
+        {
+            var apidownloadFilebytes = KYCUtility.GetX509CACertificate();
+            //MemoryStream stream = new MemoryStream(apidownloadFilebytes);
+
+            // Return the file as a download
+            //return File(stream, "application/cer", "CACertificate.pfx");
+            var certificate = new RootCertificate();
+            certificate.CreatedDate = DateTime.Now;
+            certificate.ExpireDate = DateTime.Now.AddYears(24);
+            certificate.Certificates = Convert.ToBase64String(apidownloadFilebytes);
+            var rootcertificate=await _rootCertificateService.Post(certificate);
+            byte[] byteArray = Convert.FromBase64String(rootcertificate.Certificates);
+            MemoryStream stream = new MemoryStream(byteArray);
+
+            //Return the file as a download
+            return File(stream, "application/cer", "CACertificate.pfx");
+        }
+        [HttpGet, Route("DownloadMyCertificate")]
+        public async Task<IActionResult> GetX509Certificate([FromQuery] string domainname)
+        {
+            //var rootcertificate = await _rootCertificateService.Get(string.Empty);
+            //certificate.CARootPath = rootcertificate.Certificates;
+            //var apidownloadFilebytes = KYCUtility.GetX509Certificate(certificate);
+            var certificate = await _certificateService.Get(domainname);
+            byte[] byteArray = Convert.FromBase64String(certificate.CertificatePath);
+            MemoryStream stream = new MemoryStream(byteArray);
+
+            // Return the file as a download
+            return File(stream, "application/cer","Certificate.cer");
+        }
+   }
 }

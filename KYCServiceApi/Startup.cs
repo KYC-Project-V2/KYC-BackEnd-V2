@@ -35,6 +35,9 @@ namespace KYCServiceApi
             services.AddTransient<IService<State>, StateService>();
             services.AddTransient<IRepository<State>, StateRepository>();
 
+            services.AddTransient<IService<Country>, CountryService>();
+            services.AddTransient<IRepository<Country>, CountryRepository>();
+
             services.AddTransient<IService<AadharInfo>, AadharInfoService>();
             services.AddTransient<IRepository<AadharInfo>, AadharInfoRepository>();
 
@@ -70,6 +73,9 @@ namespace KYCServiceApi
 
             services.AddTransient<IService<Certificate>, CertificateService>();
             services.AddTransient<IRepository<Certificate>, CertificateRepository>();
+
+            services.AddTransient<IService<RootCertificate>, RootCertificateService>();
+            services.AddTransient<IRepository<RootCertificate>, RootCertificateRepository>();
 
             services.AddTransient<IService<APIConfiguration>, APIConfigurationService>();
             services.AddTransient<IRepository<APIConfiguration>, APIConfigurationRepository>();
@@ -121,6 +127,9 @@ namespace KYCServiceApi
 
             services.AddTransient<IJWTService, JWTService>();
             services.AddTransient<IJWTRepository, JWTRepository>();
+
+            services.AddTransient<IService<SProvider>, ServiceProviderService>();
+            services.AddTransient<IRepository<SProvider>, ServiceProviderRepository>();
 
             services.AddHttpClient();
             services.AddHealthChecks();
