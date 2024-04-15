@@ -30,6 +30,7 @@ namespace Model
         public DateTime ExpireDate { get; set; }
         public string Comments { get; set; }
         public string LoggedInUserId { get; set; }
+        public string CustomerRepresentative { get; set; }
         public string? ErrorMessage { get; set;}
 
     }
