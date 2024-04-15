@@ -22,7 +22,7 @@ namespace Repository
         Task<bool> Delete(T model);
         Task<UserDetailResponse> AddUser(T model);
         Task<UserDetailResponse> UpdateUser(T model);
-        Task<List<CustomerList>> GetAllCustomer();
+        Task<List<CustomerList>> GetAllCustomer(int status);
         Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model);
         Task<List<T>> GetCertificate(string requestNo, bool certificateType);
     }

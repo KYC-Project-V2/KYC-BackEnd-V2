@@ -29,9 +29,9 @@ namespace Service
             return response;
         }
 
-        public override async Task<List<CustomerList>> GetAllCustomer()
+        public override async Task<List<CustomerList>> GetAllCustomer(int status)
         {
-            var response = await Repository.GetAllCustomer();
+            var response = await Repository.GetAllCustomer(status);
             if (response == null)
             {
                 var customerList = new List<CustomerList>();

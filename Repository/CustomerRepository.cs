@@ -35,7 +35,7 @@ namespace Repository
         }
 
 
-        public override async Task<List<CustomerList>> GetAllCustomer()
+        public override async Task<List<CustomerList>> GetAllCustomer(int status)
         {
             List<CustomerList> models = new List<CustomerList>();
             var storedProcedureName = "GetCustomersData";
@@ -44,6 +44,7 @@ namespace Repository
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
+                    command.Parameters.Add(new SqlParameter("@IsPendingQueue", status));
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {
