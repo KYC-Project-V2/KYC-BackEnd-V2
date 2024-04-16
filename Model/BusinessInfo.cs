@@ -48,7 +48,8 @@ namespace Model
         public string? ContactZipCode { get; set; }
 
         public string? Designation { get; set; }
-
+        public string? Rating { get; set; }
+        
         public int? StateId { get; set; }
         public int? ContactStateId { get; set; }
 

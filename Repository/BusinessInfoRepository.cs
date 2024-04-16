@@ -85,6 +85,8 @@ namespace Repository
                             case "InusranceNumber":
                             case "LicenseNumber":
                             case "Rating":
+                                businessInfoDetails.Add(property.Name, "");
+                                break;
                             case "Purpose":
                             case "OwnerFirstName":
                             case "OwnerLastName":
@@ -122,7 +124,8 @@ namespace Repository
                             command.Parameters.Add(new SqlParameter($"{f.Key}", f.Value));
                         }
                     }
-                 
+                    try
+                    {
                         using (var response = command.ExecuteReaderAsync())
                         {
                             while (await response.Result.ReadAsync())
@@ -130,6 +133,12 @@ namespace Repository
                                 businessInfoResponce = Load<BusinessInfo>((IDataReader)response);
                             }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                        
                 }
             }
             return businessInfoResponce;

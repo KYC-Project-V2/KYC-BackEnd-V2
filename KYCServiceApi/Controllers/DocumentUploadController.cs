@@ -91,7 +91,7 @@ namespace KYCServiceApi.Controllers
                             break;
                         case "BusinessPanCard":
                             documentDetail.OCRInformation = await KYCUtility.TessaractOCR(fullPath);
-                            if (documentDetail.OCRInformation.Contains("BusinessPanCard") || documentDetail.OCRInformation.Contains("Business PanCard"))
+                            if (documentDetail.OCRInformation.Contains("BusinessPanCard") || documentDetail.OCRInformation.Contains("Business PanCard") || documentDetail.OCRInformation.Contains("INCOME TAX DEPARTMENT") || documentDetail.OCRInformation.Contains("Permanent Account Number"))
                             {
                                 documentDetail.IsVaidDocumentType = true;
                             }

@@ -538,13 +538,13 @@ namespace Utility
         public static byte[] GetX509CACertificate()
         {
             // Create a root CA certificate
-            X509Certificate2 caCertificate = CreateCACertificate("cn=Astitvatech.com ,O=Astitvatech, L=Delhi, S=Delhi, C=IN");
+            X509Certificate2 caCertificate = CreateCACertificate("cn=Asstitvatech.com.com ,O=Asstitvatech, L=Delhi, S=Delhi, C=IN");
 
-            using (X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
-            {
-                store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
-                store?.Add(caCertificate);
-            }
+            //using (X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+            //{
+            //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
+            //    store?.Add(caCertificate);
+            //}
             byte[] certBytes = caCertificate.Export(X509ContentType.Pfx);
             return certBytes;
         }

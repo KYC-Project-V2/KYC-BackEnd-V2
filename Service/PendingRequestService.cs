@@ -38,7 +38,7 @@ namespace Service
                 if (requestOrigin.RequestTypeId == 1)
                 {
                     PersonalInfo personalInfo = await _personalInfoService.Get(pendingRequest.RequestNo);
-                    if (personalInfo != null && personalInfo.FirstName == pendingRequest.FirstName && personalInfo.LastName == pendingRequest.LastName && personalInfo.Email == pendingRequest.Email)
+                    if (personalInfo != null && personalInfo.FirstName?.ToLower() == pendingRequest.FirstName?.ToLower() && personalInfo.LastName?.ToLower() == pendingRequest.LastName?.ToLower() && personalInfo.Email?.ToLower() == pendingRequest.Email?.ToLower())
                     {
                         OTPVerification oTPVerification = new OTPVerification();
                         oTPVerification.RequestNumber = pendingRequest.RequestNo;
@@ -57,7 +57,7 @@ namespace Service
                 if (requestOrigin.RequestTypeId == 2)
                 {
                     BusinessInfo businessInfo = await _bussinessinfoService.Get(pendingRequest.RequestNo);
-                    if (businessInfo != null && businessInfo.ContactFirstName == pendingRequest.FirstName && businessInfo.ContactLastName == pendingRequest.LastName && businessInfo.ContactEmail == pendingRequest.Email)
+                    if (businessInfo != null && businessInfo.ContactFirstName?.ToLower() == pendingRequest.FirstName?.ToLower() && businessInfo.ContactLastName?.ToLower() == pendingRequest.LastName?.ToLower() && businessInfo.ContactEmail?.ToLower() == pendingRequest.Email?.ToLower())
                     {
                         OTPVerification oTPVerification = new OTPVerification();
                         oTPVerification.RequestNumber = pendingRequest.RequestNo;

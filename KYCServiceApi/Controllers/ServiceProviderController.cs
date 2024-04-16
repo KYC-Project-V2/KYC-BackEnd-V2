@@ -68,14 +68,14 @@ namespace KYCServiceApi.Controllers
                 apidownloadBody = apidownloadBody.Replace("{{produrl}}", kycweburl + "/welcomerequest?id=" + tokencode);
 
                 apidownloadBody = apidownloadBody.Replace("{{apistageurl}}", string.Empty);
-                apidownloadBody = apidownloadBody.Replace("{{apiprodurl}}", kycapiurl + "/ServiceProvider/Tokencode?tokencode=" + tokencode);
+                apidownloadBody = apidownloadBody.Replace("{{apiprodurl}}", kycapiurl);
             }
             else
             {
                 apidownloadBody = apidownloadBody.Replace("{{stageurl}}", kycweburl + "/welcomerequest?id=" + tokencode);
                 apidownloadBody = apidownloadBody.Replace("{{produrl}}", string.Empty);
 
-                apidownloadBody = apidownloadBody.Replace("{{apistageurl}}", kycapiurl + "/ServiceProvider/Tokencode?tokencode=" + tokencode);
+                apidownloadBody = apidownloadBody.Replace("{{apistageurl}}", kycapiurl);
                 apidownloadBody = apidownloadBody.Replace("{{apiprodurl}}", string.Empty);
             }
 
