@@ -128,5 +128,9 @@ namespace Repository
         {
             throw new NotImplementedException();
         }
+        public virtual Task<T> GetDashboardData()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

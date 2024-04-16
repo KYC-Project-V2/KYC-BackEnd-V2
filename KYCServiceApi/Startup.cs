@@ -124,6 +124,9 @@ namespace KYCServiceApi
             services.AddTransient<IService<CustomerDetail>, CustomerService>();
             services.AddTransient<IRepository<CustomerDetail>, CustomerRepository>();
 
+            services.AddTransient<IService<Dashboard>, DashboardService>();
+            services.AddTransient<IRepository<Dashboard>, DashboardRepository>();
+
 
             services.AddTransient<IJWTService, JWTService>();
             services.AddTransient<IJWTRepository, JWTRepository>();

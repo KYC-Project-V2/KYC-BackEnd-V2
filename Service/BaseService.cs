@@ -82,6 +82,11 @@ namespace Service
             throw new NotImplementedException();
         }
 
-       
+        public virtual async Task<T> GetDashboardData()
+        {
+            return await Repository.GetDashboardData();
+        }
+
+
     }
 }
