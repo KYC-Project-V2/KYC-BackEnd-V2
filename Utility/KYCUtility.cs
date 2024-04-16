@@ -561,7 +561,7 @@ namespace Utility
             {
                 rng.GetBytes(serialNumberBytes);
             }
-            var subjectName = "CN = " + certificate.DomainName + " ,OU = Astitvatech,O = Astitvatech,C = IN";
+            var subjectName = "CN = " + certificate.DomainName + " ,C = IN";
             // Create a personal certificate signed by the CA
             X509Certificate2 personalCertificate = CreatePersonalCertificate(subjectName, caCertificate, certificate.IsProvisional, serialNumberBytes);
             // Get the public key parameters
