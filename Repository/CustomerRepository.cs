@@ -44,7 +44,7 @@ namespace Repository
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@IsPendingQueue", status));
+                    //command.Parameters.Add(new SqlParameter("@IsPendingQueue", status));
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {
@@ -58,7 +58,7 @@ namespace Repository
             return models;
         }
 
-        public override async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate customerUpdate)
+        public override async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate customerUpdate, string certificate, string certificatePath)
         {
             string cmdText = "UpdateKYCCustomerDetails";
             CustomerResponse custDetail = null;
@@ -75,14 +75,23 @@ namespace Repository
                     command.Parameters.Add(new SqlParameter("@PanVerificationStatus", customerUpdate.PanVerificationStatus));
                     command.Parameters.Add(new SqlParameter("@Email", customerUpdate.Email));
                     command.Parameters.Add(new SqlParameter("@LoggedInUserId", customerUpdate.LoggedInUserId));
-                    command.Parameters.Add(new SqlParameter("@Comments", customerUpdate.Comments));                  
+                    command.Parameters.Add(new SqlParameter("@Comments", customerUpdate.Comments));
+                    command.Parameters.Add(new SqlParameter("@Certificates", certificate));
+                    command.Parameters.Add(new SqlParameter("@CertificatesPath", certificatePath));
                     try
                     {
                         var response = await command.ExecuteNonQueryAsync();
                         if (response > 0)
                         {
                             custDetail = new CustomerResponse();
-                            custDetail.Message = "KYC Verification is completed and additional details are sent to registered email id";                           
+                            if (customerUpdate.AddharVerificationStatus && customerUpdate.PanVerificationStatus)
+                            {
+                                custDetail.Message = "KYC Verification is completed and additional details are sent to registered email id";
+                            }
+                            else
+                            {
+                                custDetail.Message = "Notification has been sent to registered email id of the customer";
+                            }
                         }
                     }
                     catch (Exception ex)

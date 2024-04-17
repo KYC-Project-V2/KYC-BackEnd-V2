@@ -24,9 +24,9 @@ namespace Service
         {
             return await Repository.GetAllCustomer(status);
         }
-        public virtual async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model)
+        public virtual async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model, string certificates, string certificatesPath)
         {
-            return await Repository.UpdateKYCCustomerDetails(model);
+            return await Repository.UpdateKYCCustomerDetails(model, certificates, certificatesPath);
         }
         public virtual Task<bool> Delete(T model)
         {

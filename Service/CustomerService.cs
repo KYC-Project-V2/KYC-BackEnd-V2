@@ -1,7 +1,10 @@
 ﻿using Model;
 using Org.BouncyCastle.Asn1.X509;
+//using Org.BouncyCastle.Crypto.Tls;
 using Repository;
 using System.Text;
+//using Twilio.Rest;
+using Utility;
 
 namespace Service
 {
@@ -10,12 +13,21 @@ namespace Service
         private readonly IService<TemplateConfiguration> _templateConfigurationservice;
         private readonly IService<Certificate> _certificateService;
         private readonly IService<Email> _emailService;
-        public CustomerService(IRepository<CustomerDetail> repository, IService<TemplateConfiguration> templateConfigurationservice, IService<Certificate> certificateService, IService<Email> emailService)
+        private readonly IService<Domain> _domainService;
+        private readonly IService<RootCertificate> _rootCertificateService;
+        public CustomerService(IRepository<CustomerDetail> repository, 
+            IService<TemplateConfiguration> templateConfigurationservice, 
+            IService<Certificate> certificateService, 
+            IService<Email> emailService,
+            IService<Domain> domainService,
+            IService<RootCertificate> rootCertificateService)
         {
             Repository = repository;
             _templateConfigurationservice = templateConfigurationservice;
             _certificateService = certificateService;
             _emailService = emailService;
+            _domainService = domainService;
+            _rootCertificateService = rootCertificateService;
         }
         public override async Task<CustomerDetail> Get(string Id)
         {
@@ -37,18 +49,52 @@ namespace Service
                 var customerList = new List<CustomerList>();
                 customerList.Add(new CustomerList
                 {
-                    ErrorMessage = "No User Found"
+                    ErrorMessage = "No Customers Found"
 
                 });
 
                 return customerList;
             }
+            else // Filters Customers 
+            {
+                if (status == 1) // Get the Issued Records
+                {
+                    response = response.Where(i => i.CertificateStatus == "Issued").ToList();
+                }
+                else // Get the Pending Records
+                {
+                    response = response.Where(i => i.CertificateStatus != "Issued").ToList();
+                }
+            }
             return response;
         }
 
-        public override async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate customerUpdate)
+        public override async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate customerUpdate, string certificates, string certificatesPath)
         {
-            var response = await Repository.UpdateKYCCustomerDetails(customerUpdate);
+            // Get the CertificatePath and Certificate Values
+
+            if (customerUpdate != null)
+            {
+                if (customerUpdate.AddharVerificationStatus && customerUpdate.PanVerificationStatus)
+                {
+                    var domains = await _domainService.GetAll(customerUpdate.RequestNo);
+                    if (domains != null)
+                    {
+                        var getDomain = domains.FirstOrDefault();
+                        var x509certificate = new Model.X509Certificate();
+                        x509certificate.IsProvisional = false;
+                        x509certificate.DomainName = getDomain.Name;
+                        x509certificate.RequestNumber = customerUpdate.RequestNo;
+                        var rootcertificate = await _rootCertificateService.Get(string.Empty);
+                        x509certificate.CARootPath = rootcertificate.Certificates;
+                        var apidownloadFilebytes = KYCUtility.GetX509Certificate(x509certificate);
+                        certificates = apidownloadFilebytes.SerialNumber != null ? apidownloadFilebytes.SerialNumber  : "" ;
+                        certificatesPath = (apidownloadFilebytes.CertificateBytes != null) ? Convert.ToBase64String(apidownloadFilebytes.CertificateBytes) : "";
+                    }
+                }
+            }
+
+            var response = await Repository.UpdateKYCCustomerDetails(customerUpdate, certificates, certificatesPath);
 
             if (response == null)
             {
