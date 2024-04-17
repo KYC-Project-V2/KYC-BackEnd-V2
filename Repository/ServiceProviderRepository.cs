@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Net.NetworkInformation;
 using Utility;
+using Twilio.Http;
 
 namespace Repository
 {
@@ -173,5 +174,50 @@ namespace Repository
             }
             return ServiceProvider;
         }
+
+        public override async Task<List<ServiceProviderList>> GetAllServiceProvider()
+        {
+            List<ServiceProviderList> models = new List<ServiceProviderList>();
+            var storedProcedureName = "GetServiceProviderData";
+            using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
+                {
+                    var reader = await command.ExecuteReaderAsync();
+                    while (reader.Read())
+                    {
+                        var model = Load<ServiceProviderList>(reader);
+                        models.Add(model);
+                    }
+                }
+
+            }
+
+            return models;
+        }
+
+        public override async Task<ServiceProvider> GetServiceProvider(string requestNumber)
+        {           
+            var storedProcedureName = "GetServiceProviderData";
+            ServiceProvider response = null;           
+            using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
+                {
+                    command.Parameters.Add(new SqlParameter("@RequestNumber", requestNumber));
+                    var reader = await command.ExecuteReaderAsync();
+                    while (reader.Read())
+                    {
+                        response = Load<ServiceProvider>(reader);
+                    }
+                }
+
+            }
+
+            return response;
+        }
+
     }
 }

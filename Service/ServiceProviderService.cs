@@ -75,5 +75,31 @@ namespace Service
             };
             await _emailService.Post(email);
         }
+
+        public override async Task<List<ServiceProviderList>> GetAllServiceProvider()
+        {
+            var response = await Repository.GetAllServiceProvider();
+            if (response == null)
+            {
+                response = new List<ServiceProviderList>();
+                response.Add(new ServiceProviderList
+                {
+                    ErrorMessage = "No Data Found."
+                });
+            }
+            return response;
+        }
+
+        public override async Task<ServiceProvider> GetServiceProvider(string requestNumber)
+        {
+            var response = await Repository.GetServiceProvider(requestNumber);
+            if (response == null)
+            {
+                var ServiceProvider = new ServiceProvider();
+                ServiceProvider.ErrorMessage = "No Data Found";
+                return ServiceProvider;
+            }
+            return response;
+        }
     }
 }

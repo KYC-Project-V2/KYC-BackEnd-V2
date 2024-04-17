@@ -90,5 +90,19 @@ namespace KYCServiceApi.Controllers
             return PhysicalFile(apidownloadFilePath, "application/pdf", "APIDownload.pdf");
             //return Ok("Success");
         }
+
+        [HttpGet("GetAllServiceProvider")]
+        public async Task<IActionResult> GetAllServiceProvider()
+        {           
+            var response = await _service.GetAllServiceProvider();
+            return Ok(response);
+        }
+
+        [HttpPost("GetServiceProvider")]
+        public async Task<IActionResult> GetServiceProvider(ServiceProviderRequest serviceProviderRequest)
+        {
+            var response = await _service.GetServiceProvider(serviceProviderRequest.RequestNumber);
+            return Ok(response);
+        }
     }
 }
