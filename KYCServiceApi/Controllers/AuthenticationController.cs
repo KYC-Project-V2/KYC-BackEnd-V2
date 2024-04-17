@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Model;
 using Repository;
 using Service;
+using Utility;
 
 namespace KYCServiceApi.Controllers
 {
@@ -12,12 +14,15 @@ namespace KYCServiceApi.Controllers
     {
         private readonly IJWTService _IJWTService;
         private readonly IService<Authentication> _service;
+        private readonly IConfiguration _configuration;
 
         public AuthenticationController(IJWTService iJWTService,
-            IService<Authentication> service)
+            IService<Authentication> service,
+            IConfiguration configuration)
         {
             _IJWTService = iJWTService;
             _service = service;
+            _configuration = configuration;
         }
 
         [AllowAnonymous]
@@ -25,10 +30,12 @@ namespace KYCServiceApi.Controllers
         public async Task<IActionResult> Get([FromQuery] string code, string secretKey)
         {
             Tokens tokens = null;
+            var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
+            
             var user = new Authentication
             {
                 Code = code,
-                SecretKey = secretKey
+                SecretKey = KYCUtility.encrypt(secretKey, saltkey)
             };
             var response = await _service.Get(user);
             if(response == null)
@@ -38,6 +45,7 @@ namespace KYCServiceApi.Controllers
             else
             {
                 tokens = await _IJWTService.Authenticate(user);
+                tokens.ReturnUrl = response.ReturnUrl;
             }
             return Ok(tokens);
         }

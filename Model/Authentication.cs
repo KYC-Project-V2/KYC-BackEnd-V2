@@ -13,6 +13,8 @@ namespace Model
         public string? Code { get; set; }
         public string? DomainName { get; set; }
         public string? SecretKey { get; set; }
+        public string? ReturnUrl { get; set; }
+        
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }

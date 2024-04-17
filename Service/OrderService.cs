@@ -241,6 +241,7 @@ namespace Service
                 Body = htmlBody,
             };
             var emailResponse = await _emailService.Post(email);
+            order.CertificateInfo = response;
             return order;
         }
 

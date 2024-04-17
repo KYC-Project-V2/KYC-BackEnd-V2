@@ -20,5 +20,7 @@ namespace Model
         public BusinessPanCardInfo? BusinessPanCardInfo { get; set; }
         public VoterInfo? VoterInfo { get; set; }
         public DriverLicenseInfo? DriverLicenseInfo { get; set; }
+
+        public List<Certificate>? CertificateInfo { get; set; }
     }
 }
