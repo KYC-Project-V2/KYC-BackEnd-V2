@@ -119,7 +119,7 @@ namespace Repository
             throw new NotImplementedException();
         }
 
-        public virtual Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model)
+        public virtual Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model, string certificate, string certificatePath)
         {
             throw new NotImplementedException();
         }

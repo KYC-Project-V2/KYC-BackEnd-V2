@@ -42,7 +42,9 @@ namespace KYCServiceApi.Controllers
         [Route("UpdateKYCCustomerDetails")]
         public async Task<IActionResult> UpdateKYCCustomerDetaiuls([FromBody] CustomerUpdate customerUpdate)
         {
-            var response = await _service.UpdateKYCCustomerDetails(customerUpdate);
+            string certificates = string.Empty;
+            string certificatesPath = string.Empty;
+            var response = await _service.UpdateKYCCustomerDetails(customerUpdate, certificates, certificatesPath);
             return Ok(response);
         }
 
