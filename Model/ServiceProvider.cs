@@ -53,7 +53,6 @@ namespace Model
         public string ProviderName { get; set; }
         public bool IsPANVerificationStatus { get; set; }
         public bool IsGSTVerificationStatus { get; set; }
-        public int APIStatusId { get; set; }
         public string Email { get; set; }
         public string? Comments { get; set; }
         public string LoggedInUserId { get; set; }
