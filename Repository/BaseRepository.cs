@@ -132,5 +132,20 @@ namespace Repository
         {
             throw new NotImplementedException();
         }
+
+        public virtual Task<List<ServiceProviderList>> GetAllServiceProvider()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<ServiceProvider> GetServiceProvider(string requestNo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

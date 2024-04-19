@@ -26,5 +26,8 @@ namespace Repository
         Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model, string certificate, string certificatePath);
         Task<List<T>> GetCertificate(string requestNo, bool certificateType);
         Task<T> GetDashboardData();
+        Task<List<ServiceProviderList>> GetAllServiceProvider();
+        Task<ServiceProvider> GetServiceProvider(string requestNo);
+        Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider);
     }
 }

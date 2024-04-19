@@ -87,6 +87,19 @@ namespace Service
             return await Repository.GetDashboardData();
         }
 
+        public virtual async Task<List<ServiceProviderList>> GetAllServiceProvider()
+        {
+            return await Repository.GetAllServiceProvider();
+        }
 
+        public virtual async Task<ServiceProvider> GetServiceProvider(string requestNo)
+        {
+            return await Repository.GetServiceProvider(requestNo);
+        }
+
+        public virtual async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            return await Repository.UpdateServiceProvider(updateServiceProvider);
+        }
     }
 }

@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Net.NetworkInformation;
 using Utility;
+using Twilio.Http;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto.Tls;
+using System.Xml;
 
 namespace Repository
 {
@@ -173,5 +177,93 @@ namespace Repository
             }
             return ServiceProvider;
         }
+
+        public override async Task<List<ServiceProviderList>> GetAllServiceProvider()
+        {
+            List<ServiceProviderList> models = new List<ServiceProviderList>();
+            var storedProcedureName = "GetServiceProviderData";
+            using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
+                {
+                    var reader = await command.ExecuteReaderAsync();
+                    while (reader.Read())
+                    {
+                        var model = Load<ServiceProviderList>(reader);
+                        models.Add(model);
+                    }
+                }
+
+            }
+
+            return models;
+        }
+
+        public override async Task<ServiceProvider> GetServiceProvider(string requestNumber)
+        {           
+            var storedProcedureName = "GetServiceProviderData";
+            ServiceProvider response = null;           
+            using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
+                {
+                    command.Parameters.Add(new SqlParameter("@RequestNumber", requestNumber));
+                    var reader = await command.ExecuteReaderAsync();
+                    while (reader.Read())
+                    {
+                        response = Load<ServiceProvider>(reader);
+                    }
+                }
+
+            }
+
+            return response;
+        }
+
+        public override async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            var storedProcedureName = "UpdateServiceProvider";
+            ServiceProviderResponse spResponse = null;
+            using (var connection = new SqlConnection(ConnectionInformation.ConnectionString))
+            {
+                connection.Open();
+
+                using (var command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
+                {
+
+                    command.Parameters.Add(new SqlParameter("@RequestNumber", updateServiceProvider.RequestNumber));
+                    command.Parameters.Add(new SqlParameter("@IsGSTVerificationStatus", updateServiceProvider.IsGSTVerificationStatus));
+                    command.Parameters.Add(new SqlParameter("@IsPANVerificationStatus", updateServiceProvider.IsPANVerificationStatus));
+                    command.Parameters.Add(new SqlParameter("@LoggedInUserId", updateServiceProvider.LoggedInUserId));
+                    command.Parameters.Add(new SqlParameter("@Comments", updateServiceProvider.Comments));
+                    try
+                    {
+                        var response = await command.ExecuteNonQueryAsync();
+                        if (response > 0)
+                        {
+                            spResponse = new ServiceProviderResponse();
+                            if (updateServiceProvider.IsGSTVerificationStatus && updateServiceProvider.IsPANVerificationStatus)
+                            {
+                                spResponse.Message = "KYC Verification is completed and additional details are sent to registered email id";
+                            }
+                            else
+                            {
+                                spResponse.Message = "Notification has been sent to registered email id of the service provider";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+
+                }
+            }           
+
+            return spResponse;
+        }
+
     }
 }
