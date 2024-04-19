@@ -74,7 +74,7 @@ namespace KYCServiceApi.Controllers
             certificate.CreatedDate = DateTime.Now;
             certificate.ExpireDate = DateTime.Now.AddYears(24);
             certificate.Certificates = Convert.ToBase64String(apidownloadFilebytes);
-            var rootcertificate=await _rootCertificateService.Post(certificate);
+            var rootcertificate = await _rootCertificateService.Post(certificate);
             byte[] byteArray = Convert.FromBase64String(rootcertificate.Certificates);
             MemoryStream stream = new MemoryStream(byteArray);
 
@@ -92,7 +92,7 @@ namespace KYCServiceApi.Controllers
             MemoryStream stream = new MemoryStream(byteArray);
 
             // Return the file as a download
-            return File(stream, "application/cer","Certificate.cer");
+            return File(stream, "application/cer", "Certificate.cer");
         }
-   }
+    }
 }

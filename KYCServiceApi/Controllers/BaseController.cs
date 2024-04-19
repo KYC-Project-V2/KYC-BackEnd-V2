@@ -6,6 +6,6 @@ namespace KYCServiceApi.Controllers
     [Authorize]
     public class BaseController : ControllerBase
     {
-       
+
     }
 }

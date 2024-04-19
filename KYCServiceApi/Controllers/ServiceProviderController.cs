@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using Model;
 
 using Service;
-using System.Web;
 using Utility;
 
 namespace KYCServiceApi.Controllers
@@ -28,7 +26,7 @@ namespace KYCServiceApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string requestNumber, string requestToken)
         {
-            var SProvider=new SProvider();
+            var SProvider = new SProvider();
             SProvider.RequestNumber = requestNumber;
             SProvider.RequestToken = requestToken;//HttpUtility.UrlDecode(
             var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
@@ -47,7 +45,7 @@ namespace KYCServiceApi.Controllers
         public async Task<IActionResult> Post([FromBody] SProvider sprovider)
         {
             var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
-            sprovider.SaltKey=saltkey;
+            sprovider.SaltKey = saltkey;
             var response = await _service.Post(sprovider);
             return Ok(response);
         }
@@ -62,7 +60,7 @@ namespace KYCServiceApi.Controllers
             var templateconfig = templateconfigResponse.FirstOrDefault();
             var apidownloadBody = templateconfig.Body;
 
-            if(isprod)
+            if (isprod)
             {
                 apidownloadBody = apidownloadBody.Replace("{{stageurl}}", string.Empty);
                 apidownloadBody = apidownloadBody.Replace("{{produrl}}", kycweburl + "/welcomerequest?id=" + tokencode);

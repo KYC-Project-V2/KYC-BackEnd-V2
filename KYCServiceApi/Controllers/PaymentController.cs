@@ -1,13 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Hosting;
 using Model;
-using Newtonsoft.Json;
 using Service;
-using System.Reflection;
 using System.Web;
-using Twilio.TwiML.Voice;
 using Utility;
 
 namespace KYCServiceApi.Controllers
@@ -93,7 +88,7 @@ namespace KYCServiceApi.Controllers
             }
         }
         [HttpPost("PaymentBypass")]
-        public async Task<IActionResult> Post(Payment ?bypasspayment)
+        public async Task<IActionResult> Post(Payment? bypasspayment)
         {
             try
             {
@@ -120,7 +115,8 @@ namespace KYCServiceApi.Controllers
                     try
                     {
                         payment.TransactionDate = !string.IsNullOrEmpty(transactionDate) ? DateTime.ParseExact(transactionDate, "dd-MM-yyyy HH:mm:ss", new System.Globalization.CultureInfo("en-US")) : null;
-                    } catch{}
+                    }
+                    catch { }
                     payment.InterchangeValue = bypasspayment == null ? HttpContext.Request.Form["Interchange Value"].ToString() : bypasspayment.InterchangeValue;
                     payment.PaymentMode = bypasspayment == null ? HttpContext.Request.Form["Payment Mode"].ToString() : bypasspayment.PaymentMode;
                     payment.SubMerchantId = bypasspayment == null ? HttpContext.Request.Form["SubMerchantId"].ToString() : bypasspayment.SubMerchantId;
@@ -145,7 +141,7 @@ namespace KYCServiceApi.Controllers
                 requestNumber = HttpUtility.UrlEncode(requestNumber);
                 string paymentId = null;
 
-                if(payment.PaymentId != null && payment.PaymentId > 0)
+                if (payment.PaymentId != null && payment.PaymentId > 0)
                 {
                     paymentId = KYCUtility.encrypt(payment.PaymentId.ToString(), secreteKey);
                     paymentId = HttpUtility.UrlEncode(paymentId);
@@ -154,7 +150,7 @@ namespace KYCServiceApi.Controllers
                 redirectUrl = redirectUrl + $"/kycverification?rc={responseCode}&rn={requestNumber}&pid={paymentId}";
 
                 if (bypasspayment is null)
-                   return Redirect(redirectUrl);
+                    return Redirect(redirectUrl);
                 else
                     return Ok(redirectUrl);
             }

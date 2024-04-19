@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Model;
 using Service;
 
@@ -19,7 +18,7 @@ namespace KYCServiceApi.Controllers
         {
             _service = service;
         }
-        
+
         // Post api/<LoginController>/5
         [HttpPost]
         public async Task<IActionResult> Login(LoginUserRequest loginUserRequest)
@@ -28,7 +27,7 @@ namespace KYCServiceApi.Controllers
             {
                 UserId = loginUserRequest.UserId,
                 Password = loginUserRequest.Password,
-                 
+
             };
             var response = await _service.Get(model);
             return Ok(response);

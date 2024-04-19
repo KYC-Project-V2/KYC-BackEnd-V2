@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Model;
 using Service;
 
@@ -28,7 +27,7 @@ namespace KYCServiceApi.Controllers
         }
 
 
-        
+
         [HttpGet]
         [Route("GetAllUser")]
         public async Task<IActionResult> GetAllUser()
