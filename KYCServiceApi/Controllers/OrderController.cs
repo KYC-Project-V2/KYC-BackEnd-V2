@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Model;
 using Service;
-using System.Reflection;
 
 namespace KYCServiceApi.Controllers
 {
@@ -20,7 +18,7 @@ namespace KYCServiceApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Order order)
         {
-                var response = await _service.Post(order);
+            var response = await _service.Post(order);
             return Ok(response);
         }
 

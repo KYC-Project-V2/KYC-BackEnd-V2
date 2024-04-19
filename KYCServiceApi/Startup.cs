@@ -1,9 +1,6 @@
-﻿using KYCServiceApi.Controllers;
-using KYCServiceApi.Models;
+﻿using KYCServiceApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Model;

@@ -66,10 +66,10 @@ namespace KYCServiceApi.Controllers
                     redirectUrl = redirectUrl + "?rn=" + decryptedText;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
-            }    
+            }
             return Redirect(redirectUrl);
         }
     }

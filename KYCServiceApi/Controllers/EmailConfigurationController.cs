@@ -1,6 +1,4 @@
-﻿using KYCServiceApi;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Model;
 using Service;
 namespace KYCServiceApi.Controllers

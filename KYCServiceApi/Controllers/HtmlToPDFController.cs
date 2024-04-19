@@ -1,8 +1,4 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Mvc;
-using iTextSharp.text.pdf;
-using iTextSharp.text;
-using iTextSharp.tool.xml;
+﻿using Microsoft.AspNetCore.Mvc;
 using Utility;
 
 namespace KYCServiceApi.Controllers

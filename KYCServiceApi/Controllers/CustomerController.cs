@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Model;
 using Service;
 
@@ -29,7 +28,7 @@ namespace KYCServiceApi.Controllers
         }
 
 
-        
+
         [HttpGet]
         [Route("GetAllCustomer")]
         public async Task<IActionResult> GetAllCustomer(int status)
@@ -48,6 +47,6 @@ namespace KYCServiceApi.Controllers
             return Ok(response);
         }
 
-        
+
     }
 }

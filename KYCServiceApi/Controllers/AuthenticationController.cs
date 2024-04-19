@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Model;
-using Repository;
 using Service;
 using Utility;
 
@@ -31,14 +29,14 @@ namespace KYCServiceApi.Controllers
         {
             Tokens tokens = null;
             var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
-            
+
             var user = new Authentication
             {
                 Code = code,
                 SecretKey = KYCUtility.encrypt(secretKey, saltkey)
             };
             var response = await _service.Get(user);
-            if(response == null)
+            if (response == null)
             {
                 return Unauthorized();
             }
