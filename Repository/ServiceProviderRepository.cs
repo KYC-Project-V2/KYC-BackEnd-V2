@@ -11,6 +11,9 @@ using System.Reflection;
 using System.Net.NetworkInformation;
 using Utility;
 using Twilio.Http;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto.Tls;
+using System.Xml;
 
 namespace Repository
 {
@@ -217,6 +220,49 @@ namespace Repository
             }
 
             return response;
+        }
+
+        public override async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            var storedProcedureName = "UpdateServiceProvider";
+            ServiceProviderResponse spResponse = null;
+            using (var connection = new SqlConnection(ConnectionInformation.ConnectionString))
+            {
+                connection.Open();
+
+                using (var command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
+                {
+
+                    command.Parameters.Add(new SqlParameter("@RequestNumber", updateServiceProvider.RequestNumber));
+                    command.Parameters.Add(new SqlParameter("@IsGSTVerificationStatus", updateServiceProvider.IsGSTVerificationStatus));
+                    command.Parameters.Add(new SqlParameter("@IsPANVerificationStatus", updateServiceProvider.IsPANVerificationStatus));
+                    command.Parameters.Add(new SqlParameter("@LoggedInUserId", updateServiceProvider.LoggedInUserId));
+                    command.Parameters.Add(new SqlParameter("@Comments", updateServiceProvider.Comments));
+                    try
+                    {
+                        var response = await command.ExecuteNonQueryAsync();
+                        if (response > 0)
+                        {
+                            spResponse = new ServiceProviderResponse();
+                            if (updateServiceProvider.IsGSTVerificationStatus && updateServiceProvider.IsPANVerificationStatus)
+                            {
+                                spResponse.Message = "KYC Verification is completed and additional details are sent to registered email id";
+                            }
+                            else
+                            {
+                                spResponse.Message = "Notification has been sent to registered email id of the service provider";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+
+                }
+            }           
+
+            return spResponse;
         }
 
     }

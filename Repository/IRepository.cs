@@ -28,5 +28,6 @@ namespace Repository
         Task<T> GetDashboardData();
         Task<List<ServiceProviderList>> GetAllServiceProvider();
         Task<ServiceProvider> GetServiceProvider(string requestNo);
+        Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider);
     }
 }

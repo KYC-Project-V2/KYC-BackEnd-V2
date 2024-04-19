@@ -96,5 +96,10 @@ namespace Service
         {
             return await Repository.GetServiceProvider(requestNo);
         }
+
+        public virtual async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            return await Repository.UpdateServiceProvider(updateServiceProvider);
+        }
     }
 }

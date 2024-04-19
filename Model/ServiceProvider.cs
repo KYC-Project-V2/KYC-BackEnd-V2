@@ -32,12 +32,31 @@ namespace Model
     public class ServiceProviderRequest {
         public string RequestNumber { get; set; }
     }
+    public class ServiceProviderResponse 
+    {
+        public string Message { get; set; }
+
+    }
     public class ServiceProviderList
     {
         public string RequestNumber { get; set; }
         public string ProviderName { get; set; }
         public DateTime RequestedDate { get; set; }
         public string? VerificationStatus { get; set; }
+        public string? ErrorMessage { get; set; }
+
+    }
+
+    public class UpdateServiceProvider
+    {
+        public string RequestNumber { get; set; }
+        public string ProviderName { get; set; }
+        public bool IsPANVerificationStatus { get; set; }
+        public bool IsGSTVerificationStatus { get; set; }
+        public int APIStatusId { get; set; }
+        public string Email { get; set; }
+        public string? Comments { get; set; }
+        public string LoggedInUserId { get; set; }
         public string? ErrorMessage { get; set; }
 
     }

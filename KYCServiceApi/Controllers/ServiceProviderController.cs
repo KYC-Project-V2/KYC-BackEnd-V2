@@ -104,5 +104,12 @@ namespace KYCServiceApi.Controllers
             var response = await _service.GetServiceProvider(serviceProviderRequest.RequestNumber);
             return Ok(response);
         }
+
+        [HttpPost("UpdateServiceProvider")]
+        public async Task<IActionResult> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            var response = await _service.UpdateServiceProvider(updateServiceProvider);
+            return Ok(response);
+        }
     }
 }

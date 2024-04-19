@@ -101,5 +101,85 @@ namespace Service
             }
             return response;
         }
+
+        public override async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            var response = await Repository.UpdateServiceProvider(updateServiceProvider);
+            if (response == null)
+            {
+                var ServiceProvider = new ServiceProviderResponse();
+                ServiceProvider.Message = "Verification Failed";
+                return ServiceProvider;
+            }
+            else if (!string.IsNullOrEmpty(response?.Message))
+            {
+                var templateconfig = await _templateConfigurationservice.Get(3);
+                var htmlBody = templateconfig.FirstOrDefault().Body;
+                htmlBody = htmlBody.Replace("{{name}}", updateServiceProvider.ProviderName);
+                htmlBody = htmlBody.Replace("{{requestnumber}}", updateServiceProvider.RequestNumber);
+                if (updateServiceProvider.IsGSTVerificationStatus && updateServiceProvider.IsPANVerificationStatus)
+                {
+                    var template = @"<?xml version='1.0'?> <html><body><div style='margin-top: 10px;border-radius: 5px; font-size: large; align-items: center;display: flex; flex-direction: column; box-sizing: border-box;padding: 0.5rem 0.5rem; background-color: #F47216; color: #FFFFFF;'>KYC Verification</div>  
+                                    <div style='margin-top: 25px;font-size: large; margin-left: 30px; margin-right: 30px;'> <div>Hello {{name}}</div>  
+                                    <div style='margin-top:20px'>Your KYC Verification Request is completed successfully.<br/>So, Please read the comments below for more information.</div>  
+                                    <div style='margin-top:10px;margin-bottom:25px'>KYC Request Number : <b>{{requestnumber}}</b> </div>  <div style='margin-top:100px; '> 
+                                    <div style='margin-top:10px;margin-bottom:25px'> Comments :<b>{{comment}}</b> </div> <div style='margin-top:30px;'>Thanks, </div> <div>Astitva</div> </div> </body> </html>";
+                    template = template.Replace("{{name}}", updateServiceProvider.ProviderName);
+                    template = template.Replace("{{requestnumber}}", updateServiceProvider.RequestNumber);
+                    template = template.Replace("{{comment}}", updateServiceProvider.Comments);
+                    templateconfig[0].Body = template;
+                    htmlBody = templateconfig[0].Body;
+
+                }
+                else if (updateServiceProvider.IsGSTVerificationStatus && !updateServiceProvider.IsPANVerificationStatus)
+                {
+                    var template = @"<?xml version='1.0'?> <html><body><div style='margin-top: 10px;border-radius: 5px; font-size: large; align-items: center;display: flex; flex-direction: column; box-sizing: border-box;padding: 0.5rem 0.5rem; background-color: #F47216; color: #FFFFFF;'>KYC Verification</div>  
+                                    <div style='margin-top: 25px;font-size: large; margin-left: 30px; margin-right: 30px;'> <div>Hello {{name}}</div>  
+                                    <div style='margin-top:20px'>This is to inform you that your GST is valid but your Pan card is not valid.<br/>So, Please read the comments below for more information.</div>  
+                                    <div style='margin-top:10px;margin-bottom:25px'>KYC Request Number : <b>{{requestnumber}}</b> </div>  <div style='margin-top:100px; '> 
+                                    <div style='margin-top:10px;margin-bottom:25px'> Comments :<b>{{comment}}</b> </div> <div style='margin-top:30px;'>Thanks, </div> <div>Astitva</div> </div> </body> </html>";
+                    template = template.Replace("{{name}}", updateServiceProvider.ProviderName);
+                    template = template.Replace("{{requestnumber}}", updateServiceProvider.RequestNumber);
+                    template = template.Replace("{{comment}}", updateServiceProvider.Comments);
+                    templateconfig[0].Body = template;
+                    htmlBody = templateconfig[0].Body;
+                }
+                else if (!updateServiceProvider.IsGSTVerificationStatus && updateServiceProvider.IsPANVerificationStatus)
+                {
+                    var template = @"<?xml version='1.0'?> <html><body><div style='margin-top: 10px;border-radius: 5px; font-size: large; align-items: center;display: flex; flex-direction: column; box-sizing: border-box;padding: 0.5rem 0.5rem; background-color: #F47216; color: #FFFFFF;'>KYC Verification</div>  
+                                    <div style='margin-top: 25px;font-size: large; margin-left: 30px; margin-right: 30px;'> <div>Hello {{name}}</div>  
+                                    <div style='margin-top:20px'>This is to inform you that your Pan is valid but your GST card is not valid.<br/>So, Please read the comments below for more information.</div>  
+                                    <div style='margin-top:10px;margin-bottom:25px'>KYC Request Number : <b>{{requestnumber}}</b> </div>  <div style='margin-top:100px; '> 
+                                    <div style='margin-top:10px;margin-bottom:25px'> Comments :<b>{{comment}}</b> </div> <div style='margin-top:30px;'>Thanks, </div> <div>Astitva</div> </div> </body> </html>";
+                    template = template.Replace("{{name}}", updateServiceProvider.ProviderName);
+                    template = template.Replace("{{requestnumber}}", updateServiceProvider.RequestNumber);
+                    template = template.Replace("{{comment}}", updateServiceProvider.Comments);
+                    templateconfig[0].Body = template;
+                    htmlBody = templateconfig[0].Body;
+                }
+                else if (!updateServiceProvider.IsGSTVerificationStatus && !updateServiceProvider.IsPANVerificationStatus)
+                {
+                    var template = @"<?xml version='1.0'?> <html><body><div style='margin-top: 10px;border-radius: 5px; font-size: large; align-items: center;display: flex; flex-direction: column; box-sizing: border-box;padding: 0.5rem 0.5rem; background-color: #F47216; color: #FFFFFF;'>KYC Verification</div>  
+                                    <div style='margin-top: 25px;font-size: large; margin-left: 30px; margin-right: 30px;'> <div>Hello {{name}}</div>  
+                                    <div style='margin-top:20px'>This is to inform you that your Pan and GST card is not valid.<br/>So, Please read the comments below for more information.</div>  
+                                    <div style='margin-top:10px;margin-bottom:25px'>KYC Request Number : <b>{{requestnumber}}</b> </div>  <div style='margin-top:100px; '> 
+                                    <div style='margin-top:10px;margin-bottom:25px'> Comments :<b>{{comment}}</b> </div> <div style='margin-top:30px;'>Thanks, </div> <div>Astitva</div> </div> </body> </html>";
+                    template = template.Replace("{{name}}", updateServiceProvider.ProviderName);
+                    template = template.Replace("{{requestnumber}}", updateServiceProvider.RequestNumber);
+                    template = template.Replace("{{comment}}", updateServiceProvider.Comments);
+                    templateconfig[0].Body = template;
+                    htmlBody = templateconfig[0].Body;
+                }
+                var email = new Email
+                {
+                    FromAddess = templateconfig.FirstOrDefault().Sender,
+                    ToAddress = updateServiceProvider.Email,
+                    Subject = templateconfig.FirstOrDefault().Subject,
+                    Body = htmlBody,
+                };
+                var emailResponse = await _emailService.Post(email);
+            }
+            return response;
+        }
     }
 }
