@@ -92,14 +92,19 @@ namespace Service
             return await Repository.GetAllServiceProvider();
         }
 
-        public virtual async Task<ServiceProvider> GetServiceProvider(string requestNo)
+        public virtual async Task<ServiceProvider> GetServiceProvider(ServiceProviderRequest serviceProviderRequest)
         {
-            return await Repository.GetServiceProvider(requestNo);
+            return await Repository.GetServiceProvider(serviceProviderRequest);
         }
 
         public virtual async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
         {
             return await Repository.UpdateServiceProvider(updateServiceProvider);
+        }
+
+        public virtual async Task<CustomerDetail> GetCustomerData(CustomerRequest serviceProviderRequest)
+        {
+            return await Repository.GetCustomerData(serviceProviderRequest);
         }
     }
 }

@@ -26,11 +26,13 @@ namespace Model
         public string? ApiStatus { get; set; }
         public string? Comments { get; set; }
         public string? VerificationStatus { get; set; }
+        public string? PreviousComments { get; set; }
         public string? ErrorMessage { get; set; }
 
     }
     public class ServiceProviderRequest {
         public string RequestNumber { get; set; }
+        public int LoggedInUserId { get; set; }
     }
     public class ServiceProviderResponse 
     {

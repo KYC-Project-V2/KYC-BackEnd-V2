@@ -25,8 +25,9 @@ namespace Service
         Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model, string certificates, string certificatesPath);
         Task<List<T>> GetCertificate(string requestNo, bool certificateType);
         Task<T> GetDashboardData();
+        Task<CustomerDetail> GetCustomerData(CustomerRequest serviceProviderRequest);
         Task<List<ServiceProviderList>> GetAllServiceProvider();
-        Task<ServiceProvider> GetServiceProvider(string requestNo);
+        Task<ServiceProvider> GetServiceProvider(ServiceProviderRequest serviceProviderRequest);
         Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider);
 
     }

@@ -23,7 +23,7 @@ namespace KYCServiceApi.Controllers
         [Route("GetCustomer")]
         public async Task<IActionResult> GetCustomer(CustomerRequest customerRequest)
         {
-            var response = await _service.Get(customerRequest.RequestNo);
+            var response = await _service.GetCustomerData(customerRequest);
             return Ok(response);
         }
 

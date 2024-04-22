@@ -90,9 +90,9 @@ namespace Service
             return response;
         }
 
-        public override async Task<ServiceProvider> GetServiceProvider(string requestNumber)
+        public override async Task<ServiceProvider> GetServiceProvider(ServiceProviderRequest serviceProviderRequest)
         {
-            var response = await Repository.GetServiceProvider(requestNumber);
+            var response = await Repository.GetServiceProvider(serviceProviderRequest);
             if (response == null)
             {
                 var ServiceProvider = new ServiceProvider();
