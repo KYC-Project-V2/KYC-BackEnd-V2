@@ -75,6 +75,8 @@ namespace Repository
                                     TokenErrorMessage = reader.GetString(reader.GetOrdinal("TokenErrorMessage")),
                                     Tokencode = reader.GetString(reader.GetOrdinal("Tokencode")),
                                     CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
+                                    IsGSTVerificationStatus = reader.GetBoolean(reader.GetOrdinal("IsGSTVerificationStatus")),
+                                    IsPanVerficationStatus = reader.GetBoolean(reader.GetOrdinal("IsPanVerficationStatus")),
                                     // Map other columns as needed
                                 };
 

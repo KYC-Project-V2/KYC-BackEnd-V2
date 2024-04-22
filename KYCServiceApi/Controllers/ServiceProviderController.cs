@@ -38,7 +38,13 @@ namespace KYCServiceApi.Controllers
         public async Task<IActionResult> Get([FromQuery] string tokencode)
         {
             var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
-            var response = KYCUtility.decrypt(tokencode, saltkey);
+            var responsedecrypt = KYCUtility.decrypt(tokencode, saltkey);
+            var responsetokencodesplit= responsedecrypt.Split('&');
+            var SProvider = new SProvider();
+            SProvider.RequestNumber = responsetokencodesplit[0].Split('=')[1];
+            SProvider.RequestToken = responsetokencodesplit[1].Split('=')[1];
+            SProvider.SaltKey = saltkey;
+            var response = await _service.Get(SProvider);
             return Ok(response);
         }
         [HttpPost]
