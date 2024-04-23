@@ -12,7 +12,7 @@ namespace Repository
         {
             ConnectionInformation = sqlConnectionInformation;
         }
-        public override async Task<CustomerDetail> Get(string Id)
+        public override async Task<CustomerDetail> GetCustomerData(CustomerRequest serviceProviderRequest)
         {
             CustomerDetail response = null;
             var storedProcedureName = "GetCustomersData";
@@ -21,7 +21,8 @@ namespace Repository
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@RequestNo", Id));
+                    command.Parameters.Add(new SqlParameter("@RequestNo", serviceProviderRequest.RequestNo));
+                    command.Parameters.Add(new SqlParameter("@LoggedInUserId", serviceProviderRequest.LoggedInUserId));
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {

@@ -183,7 +183,7 @@ namespace Repository
         public override async Task<List<ServiceProviderList>> GetAllServiceProvider()
         {
             List<ServiceProviderList> models = new List<ServiceProviderList>();
-            var storedProcedureName = "GetServiceProviderData";
+            var storedProcedureName = "KYCGetServiceProviderDataVerification";
             using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
                 connection.Open();
@@ -202,16 +202,17 @@ namespace Repository
             return models;
         }
 
-        public override async Task<ServiceProvider> GetServiceProvider(string requestNumber)
+        public override async Task<ServiceProvider> GetServiceProvider(ServiceProviderRequest serviceProviderRequest)
         {           
-            var storedProcedureName = "GetServiceProviderData";
+            var storedProcedureName = "KYCGetServiceProviderDataVerification";
             ServiceProvider response = null;           
             using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    command.Parameters.Add(new SqlParameter("@RequestNumber", requestNumber));
+                    command.Parameters.Add(new SqlParameter("@RequestNumber", serviceProviderRequest.RequestNumber));
+                    command.Parameters.Add(new SqlParameter("@LoggedInUserId", serviceProviderRequest.LoggedInUserId));
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {
@@ -226,7 +227,7 @@ namespace Repository
 
         public override async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
         {
-            var storedProcedureName = "UpdateServiceProvider";
+            var storedProcedureName = "KYCUpdateServiceProviderVerification";
             ServiceProviderResponse spResponse = null;
             using (var connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
@@ -240,6 +241,7 @@ namespace Repository
                     command.Parameters.Add(new SqlParameter("@IsPANVerificationStatus", updateServiceProvider.IsPANVerificationStatus));
                     command.Parameters.Add(new SqlParameter("@LoggedInUserId", updateServiceProvider.LoggedInUserId));
                     command.Parameters.Add(new SqlParameter("@Comments", updateServiceProvider.Comments));
+                    command.Parameters.Add(new SqlParameter("@Email", updateServiceProvider.Email));
                     try
                     {
                         var response = await command.ExecuteNonQueryAsync();

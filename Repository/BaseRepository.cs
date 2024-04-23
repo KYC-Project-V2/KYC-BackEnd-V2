@@ -138,12 +138,17 @@ namespace Repository
             throw new NotImplementedException();
         }
 
-        public virtual Task<ServiceProvider> GetServiceProvider(string requestNo)
+        public virtual Task<ServiceProvider> GetServiceProvider(ServiceProviderRequest serviceProviderRequest)
         {
             throw new NotImplementedException();
         }
 
         public virtual Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<CustomerDetail> GetCustomerData(CustomerRequest serviceProviderRequest)
         {
             throw new NotImplementedException();
         }

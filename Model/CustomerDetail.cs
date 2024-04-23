@@ -31,6 +31,7 @@ namespace Model
         public string Comments { get; set; }
         public string LoggedInUserId { get; set; }
         public string CustomerRepresentative { get; set; }
+        public string PreviousComments { get; set; }
         public string? ErrorMessage { get; set;}
 
     }
@@ -61,7 +62,8 @@ namespace Model
     }
     public class CustomerRequest
     {
-        public string RequestNo { get; set; }       
+        public string RequestNo { get; set; }
+        public int LoggedInUserId { get; set; }
     }
     
 }
