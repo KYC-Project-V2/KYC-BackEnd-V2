@@ -29,7 +29,7 @@ namespace Model
         public DateTime RequestedDate { get; set; }
         public DateTime ExpireDate { get; set; }
         public string Comments { get; set; }
-        public string LoggedInUserId { get; set; }
+        public int LoggedInUserId { get; set; }
         public string CustomerRepresentative { get; set; }
         public string PreviousComments { get; set; }
         public string? ErrorMessage { get; set;}
@@ -52,7 +52,7 @@ namespace Model
         public bool AddharVerificationStatus { get; set; }
         public bool PanVerificationStatus { get; set; }
         public string Email { get; set; }
-        public string LoggedInUserId { get; set; }
+        public int LoggedInUserId { get; set; }
         public string Comments { get; set; }
     }
     public class CustomerResponse

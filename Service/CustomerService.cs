@@ -103,11 +103,19 @@ namespace Service
             }
             else if (!string.IsNullOrEmpty(response?.Message))
             {
-                var templateconfig = await _templateConfigurationservice.Get(3);
-                var htmlBody = templateconfig.FirstOrDefault().Body;
-
+                var custRequest = new CustomerRequest
+                {
+                    RequestNo= customerUpdate.RequestNo,
+                    LoggedInUserId  =   customerUpdate.LoggedInUserId
+                };
+                var custData = await Repository.GetCustomerData(custRequest);
+                string htmlBody = string.Empty;
+                var template = await _templateConfigurationservice.Get(9);
+                htmlBody = template.FirstOrDefault().Body;
                 if (customerUpdate.AddharVerificationStatus && customerUpdate.PanVerificationStatus)
                 {
+                    var templateconfig = await _templateConfigurationservice.Get(3);
+                    htmlBody = templateconfig.FirstOrDefault().Body;
                     htmlBody = htmlBody.Replace("{{name}}", customerUpdate.RequesterName);
                     htmlBody = htmlBody.Replace("{{requestnumber}}", customerUpdate.RequestNo);
                     var certData = await _certificateService.GetCertificate(customerUpdate.RequestNo, Convert.ToBoolean(1));
@@ -122,48 +130,36 @@ namespace Service
                 }
                 else if (customerUpdate.AddharVerificationStatus && !customerUpdate.PanVerificationStatus)
                 {
-                    var template = @"<?xml version='1.0'?> <html><body><div style='margin-top: 10px;border-radius: 5px; font-size: large; align-items: center;display: flex; flex-direction: column; box-sizing: border-box;padding: 0.5rem 0.5rem; background-color: #F47216; color: #FFFFFF;'>KYC Verification</div>  
-                                    <div style='margin-top: 25px;font-size: large; margin-left: 30px; margin-right: 30px;'> <div>Hello {{name}}</div>  
-                                    <div style='margin-top:20px'>This is to inform you that your Aadhar is valid but your Pan card is not valid.<br/>So, Please read the comments below for more information.</div>  
-                                    <div style='margin-top:10px;margin-bottom:25px'>KYC Request Number : <b>{{requestnumber}}</b> </div>  <div style='margin-top:100px; '> 
-                                    <div style='margin-top:10px;margin-bottom:25px'> Comments :<b>{{comment}}</b> </div> <div style='margin-top:30px;'>Thanks, </div> <div>Astitva</div> </div> </body> </html>";
-                    template = template.Replace("{{name}}", customerUpdate.RequesterName);
-                    template = template.Replace("{{requestnumber}}", customerUpdate.RequestNo);
-                    template = template.Replace("{{comment}}", customerUpdate.Comments);
-                    templateconfig[0].Body = template;
-                    htmlBody = templateconfig[0].Body;
+                    string bodyMsg = (custData.RequestTypeId == 1) ? "This is to inform you that your Aadhar is valid but your Pan card is not valid." : "This is to inform you that your GST is valid but your Pan card is not valid.";
+                    htmlBody = htmlBody.Replace("{{name}}", customerUpdate.RequesterName);
+                    htmlBody = htmlBody.Replace("{{bodyMessage}}", bodyMsg);
+                    htmlBody = htmlBody.Replace("{{requestnumber}}", customerUpdate.RequestNo);
+                    htmlBody = htmlBody.Replace("{{comment}}", customerUpdate.Comments);
                 }
                 else if (!customerUpdate.AddharVerificationStatus && customerUpdate.PanVerificationStatus)
                 {
-                    var template = @"<?xml version='1.0'?> <html><body><div style='margin-top: 10px;border-radius: 5px; font-size: large; align-items: center;display: flex; flex-direction: column; box-sizing: border-box;padding: 0.5rem 0.5rem; background-color: #F47216; color: #FFFFFF;'>KYC Verification</div>  
-                                    <div style='margin-top: 25px;font-size: large; margin-left: 30px; margin-right: 30px;'> <div>Hello {{name}}</div>  
-                                    <div style='margin-top:20px'>This is to inform you that your Pan is valid but your Aadhar card is not valid.<br/>So, Please read the comments below for more information.</div>  
-                                    <div style='margin-top:10px;margin-bottom:25px'>KYC Request Number : <b>{{requestnumber}}</b> </div>  <div style='margin-top:100px; '> 
-                                    <div style='margin-top:10px;margin-bottom:25px'> Comments :<b>{{comment}}</b> </div> <div style='margin-top:30px;'>Thanks, </div> <div>Astitva</div> </div> </body> </html>";
-                    template = template.Replace("{{name}}", customerUpdate.RequesterName);
-                    template = template.Replace("{{requestnumber}}", customerUpdate.RequestNo);
-                    template = template.Replace("{{comment}}", customerUpdate.Comments);
-                    templateconfig[0].Body = template;
-                    htmlBody = templateconfig[0].Body;
+                    string bodyMsg = (custData.RequestTypeId == 1) ? "This is to inform you that your Pan is valid but your Aadhar card is not valid." : "This is to inform you that your Pan is valid but your GST is not valid.";
+
+                    htmlBody = htmlBody.Replace("{{name}}", customerUpdate.RequesterName);
+                    htmlBody = htmlBody.Replace("{{bodyMessage}}", bodyMsg);
+                    htmlBody = htmlBody.Replace("{{requestnumber}}", customerUpdate.RequestNo);
+                    htmlBody = htmlBody.Replace("{{comment}}", customerUpdate.Comments);                    
                 }
                 else if (!customerUpdate.AddharVerificationStatus && !customerUpdate.PanVerificationStatus)
                 {
-                    var template = @"<?xml version='1.0'?> <html><body><div style='margin-top: 10px;border-radius: 5px; font-size: large; align-items: center;display: flex; flex-direction: column; box-sizing: border-box;padding: 0.5rem 0.5rem; background-color: #F47216; color: #FFFFFF;'>KYC Verification</div>  
-                                    <div style='margin-top: 25px;font-size: large; margin-left: 30px; margin-right: 30px;'> <div>Hello {{name}}</div>  
-                                    <div style='margin-top:20px'>This is to inform you that your Pan and Aadhar card is not valid.<br/>So, Please read the comments below for more information.</div>  
-                                    <div style='margin-top:10px;margin-bottom:25px'>KYC Request Number : <b>{{requestnumber}}</b> </div>  <div style='margin-top:100px; '> 
-                                    <div style='margin-top:10px;margin-bottom:25px'> Comments :<b>{{comment}}</b> </div> <div style='margin-top:30px;'>Thanks, </div> <div>Astitva</div> </div> </body> </html>";
-                    template = template.Replace("{{name}}", customerUpdate.RequesterName);
-                    template = template.Replace("{{requestnumber}}", customerUpdate.RequestNo);
-                    template = template.Replace("{{comment}}", customerUpdate.Comments);
-                    templateconfig[0].Body = template;
-                    htmlBody = templateconfig[0].Body;
+                    string bodyMsg = (custData.RequestTypeId == 1) ? "This is to inform you that your Pan and Aadhar card is not valid." : "This is to inform you that your Pan and GST is not valid.";
+                   
+                    htmlBody = htmlBody.Replace("{{name}}", customerUpdate.RequesterName);
+                    htmlBody = htmlBody.Replace("{{bodyMessage}}", bodyMsg);
+                    htmlBody = htmlBody.Replace("{{requestnumber}}", customerUpdate.RequestNo);
+                    htmlBody = htmlBody.Replace("{{comment}}", customerUpdate.Comments);
+                   
                 }
                 var email = new Email
                 {
-                    FromAddess = templateconfig.FirstOrDefault().Sender,
+                    FromAddess = template.FirstOrDefault().Sender,
                     ToAddress = customerUpdate.Email,
-                    Subject = templateconfig.FirstOrDefault().Subject,
+                    Subject = template.FirstOrDefault().Subject,
                     Body = htmlBody,
                 };
                 var emailResponse = await _emailService.Post(email);
