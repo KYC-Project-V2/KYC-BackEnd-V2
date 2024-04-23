@@ -45,8 +45,8 @@ namespace Service
                 sprovider.RequestToken = KYCUtility.encrypt(KYCUtility.GenerateRandomString(10), sprovider.SaltKey);
             else
                 sprovider.RequestToken = sprovider.RequestToken;
-            sprovider.PAN = KYCUtility.encrypt(sprovider.PAN, sprovider.SaltKey);
-            sprovider.GST = KYCUtility.encrypt(sprovider.GST, sprovider.SaltKey);
+            //sprovider.PAN = KYCUtility.encrypt(sprovider.PAN, sprovider.SaltKey);
+            //sprovider.GST = KYCUtility.encrypt(sprovider.GST, sprovider.SaltKey);
             sprovider.CreatedDate = DateTime.Now;
             if(string.IsNullOrEmpty(requestnumber))
             sprovider.Tokencode = sprovider.Tokencode + KYCUtility.encrypt("RequestNumber=" + sprovider.RequestNumber + "&TokenNumber=" + KYCUtility.decrypt(sprovider.RequestToken, sprovider.SaltKey), sprovider.SaltKey);
