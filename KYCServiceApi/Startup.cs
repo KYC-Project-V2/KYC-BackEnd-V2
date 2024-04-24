@@ -134,6 +134,10 @@ namespace KYCServiceApi
             services.AddTransient<IService<SProvider>, ServiceProviderService>();
             services.AddTransient<IRepository<SProvider>, ServiceProviderRepository>();
 
+            services.AddTransient<IService<APIStatus>, APIStatusService>();
+            services.AddTransient<IRepository<APIStatus>, APIStatusRepository>();
+
+
             services.AddHttpClient();
             services.AddHealthChecks();
             services.AddSignalR();
