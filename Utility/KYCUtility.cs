@@ -539,12 +539,6 @@ namespace Utility
         {
             // Create a root CA certificate
             X509Certificate2 caCertificate = CreateCACertificate("cn=Asstitvatech.com.com ,O=Asstitvatech, L=Delhi, S=Delhi, C=IN");
-
-            //using (X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
-            //{
-            //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
-            //    store?.Add(caCertificate);
-            //}
             byte[] certBytes = caCertificate.Export(X509ContentType.Pfx);
             return certBytes;
         }
@@ -564,13 +558,6 @@ namespace Utility
             var subjectName = "CN = " + certificate.DomainName + " ,C = IN";
             // Create a personal certificate signed by the CA
             X509Certificate2 personalCertificate = CreatePersonalCertificate(subjectName, caCertificate, certificate.IsProvisional, serialNumberBytes);
-            // Get the public key parameters
-            //RSA publicKey = personalCertificate.GetRSAPublicKey();
-            //using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
-            //{
-            //    store?.Open(OpenFlags.ReadWrite); // Ensure sufficient permissions
-            //    store?.Add(personalCertificate);
-            //}
             certificate.SerialNumber = personalCertificate.SerialNumber;
             certificate.CertificateBytes = personalCertificate.Export(X509ContentType.Cert);
             return certificate;

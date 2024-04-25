@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 
 using Model;
+using Org.BouncyCastle.Asn1.X509;
 using Service;
 using System.Reflection;
 using System.Text;
+using Twilio.Rest;
 using Utility;
 
 namespace KYCServiceApi.Controllers
@@ -84,12 +86,25 @@ namespace KYCServiceApi.Controllers
         [HttpGet, Route("DownloadMyCertificate")]
         public async Task<IActionResult> GetX509Certificate([FromQuery] string domainname)
         {
-            //var rootcertificate = await _rootCertificateService.Get(string.Empty);
-            //certificate.CARootPath = rootcertificate.Certificates;
-            //var apidownloadFilebytes = KYCUtility.GetX509Certificate(certificate);
             var certificate = await _certificateService.Get(domainname);
             byte[] byteArray = Convert.FromBase64String(certificate.CertificatePath);
             MemoryStream stream = new MemoryStream(byteArray);
+
+            // Return the file as a download
+            return File(stream, "application/cer", "Certificate.cer");
+        }
+        [HttpGet, Route("DownloadExternalCertificate")]
+        public async Task<IActionResult> GetX509ExternalCertificate([FromQuery] string domainname)
+        {
+            var x509certificate = new Model.X509Certificate();
+            Guid newGuid = Guid.NewGuid();
+            x509certificate.IsProvisional = false;
+            x509certificate.DomainName = domainname;
+            x509certificate.RequestNumber = newGuid.ToString();
+            var rootcertificate = await _rootCertificateService.Get(string.Empty);
+            x509certificate.CARootPath = rootcertificate.Certificates;
+            var apidownloadFilebytes = KYCUtility.GetX509Certificate(x509certificate);
+            MemoryStream stream = new MemoryStream(apidownloadFilebytes.CertificateBytes);
 
             // Return the file as a download
             return File(stream, "application/cer", "Certificate.cer");
