@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,9 @@ namespace Model
         public string RequestNumber { get; set; }
         public bool? IsGSTVerificationStatus { get; set; } = false;
         public bool? IsPanVerficationStatus { get; set; } = false;
+
+        public string ? GST { get; set; }
+        public string? PAN { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
         public int? StateId { get; set; }
@@ -33,6 +37,7 @@ namespace Model
     public class ServiceProviderRequest {
         public string RequestNumber { get; set; }
         public int LoggedInUserId { get; set; }
+
     }
     public class ServiceProviderResponse 
     {

@@ -1,19 +1,8 @@
 ﻿using Model;
-
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.Net.NetworkInformation;
+using System.Data.SqlClient;
+using System.Runtime.Serialization.Formatters.Binary;
 using Utility;
-using Twilio.Http;
-using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Crypto.Tls;
-using System.Xml;
 
 namespace Repository
 {
@@ -113,7 +102,7 @@ namespace Repository
                     foreach (var property in modelProperties)
                     {
                         var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                        if (modelPropertyNameValue != null &&  property.Name != "SaltKey" 
+                        if (modelPropertyNameValue != null && property.Name != "SaltKey"
                             && property.Name != "ApiStatusText" && property.Name != "RequestErrorMessage"
                             && property.Name != "TokenErrorMessage")
                         {
@@ -142,7 +131,7 @@ namespace Repository
                                     ProviderId = reader.GetInt32(reader.GetOrdinal("ProviderId")),
                                     ProviderName = reader.GetString(reader.GetOrdinal("ProviderName")),
                                     RequestNumber = reader.GetString(reader.GetOrdinal("RequestNumber")),
-                                    RequestToken =   KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("RequestToken")), ServiceProvider.SaltKey),
+                                    RequestToken =KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("RequestToken")), ServiceProvider.SaltKey),
                                     GST = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("GST")), ServiceProvider.SaltKey),
                                     PAN = KYCUtility.decrypt(reader.GetString(reader.GetOrdinal("PAN")), ServiceProvider.SaltKey),
                                     AddressLine1 = reader.GetString(reader.GetOrdinal("AddressLine1")),
@@ -173,7 +162,7 @@ namespace Repository
                         {
                             throw new Exception($"Error retrieving inserted record: {ex.Message}");
                         }
-                        
+
                     }
                 }
             }
@@ -203,9 +192,9 @@ namespace Repository
         }
 
         public override async Task<ServiceProvider> GetServiceProvider(ServiceProviderRequest serviceProviderRequest)
-        {           
+        {
             var storedProcedureName = "KYCGetServiceProviderDataVerification";
-            ServiceProvider response = null;           
+            ServiceProvider response = null;
             using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
             {
                 connection.Open();
@@ -224,7 +213,7 @@ namespace Repository
 
             return response;
         }
-
+       
         public override async Task<ServiceProviderResponse> UpdateServiceProvider(UpdateServiceProvider updateServiceProvider)
         {
             var storedProcedureName = "KYCUpdateServiceProviderVerification";
@@ -264,7 +253,7 @@ namespace Repository
                     }
 
                 }
-            }           
+            }
 
             return spResponse;
         }
