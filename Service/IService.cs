@@ -21,7 +21,7 @@ namespace Service
         Task<List<T>> Post(List<T> model);
         Task<UserDetailResponse> AddUser(T model);
         Task<UserDetailResponse> UpdateUser(T model);
-        Task<List<CustomerList>> GetAllCustomer(int status);
+        Task<CustomerListResponse> GetAllCustomer(int status, int page, int perPage);
         Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model, string certificates, string certificatesPath);
         Task<List<T>> GetCertificate(string requestNo, bool certificateType);
         Task<T> GetDashboardData();

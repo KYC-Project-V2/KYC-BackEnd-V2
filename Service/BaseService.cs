@@ -20,9 +20,13 @@ namespace Service
         {
             return await Repository.UpdateUser(model);
         }
-        public virtual async Task<List<CustomerList>> GetAllCustomer(int status)
+        public virtual async Task<CustomerListResponse> GetAllCustomer(int status, int page, int perPage)
         {
-            return await Repository.GetAllCustomer(status);
+            var data =  await Repository.GetAllCustomer(status);
+            CustomerListResponse customerListResponse = new CustomerListResponse();
+            customerListResponse.data = data;
+            return customerListResponse;
+
         }
         public virtual async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate model, string certificates, string certificatesPath)
         {
