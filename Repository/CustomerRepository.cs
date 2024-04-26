@@ -45,7 +45,7 @@ namespace Repository
                 connection.Open();
                 using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
                 {
-                    //command.Parameters.Add(new SqlParameter("@IsPendingQueue", status));
+                    command.Parameters.Add(new SqlParameter("@Status", status));
                     var reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {

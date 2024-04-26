@@ -56,14 +56,14 @@ namespace Service
             }
             else // Filters Customers 
             {
-                if (status == 1) // Get the Issued Records
-                {
-                    response = response.Where(i => i.CertificateStatus == "Issued").ToList();
-                }
-                else // Get the Pending Records
-                {
-                    response = response.Where(i => i.CertificateStatus != "Issued").ToList();
-                }
+                //if (status == 1) // Get the Issued Records
+                //{
+                //    response = response.Where(i => i.CertificateStatus == "Issued").ToList();
+                //}
+                //else // Get the Pending Records
+                //{
+                //    response = response.Where(i => i.CertificateStatus != "Issued").ToList();
+                //}
 
                 int Total = response.Count();
                 if (perPage > 0 && Total > 0)
