@@ -31,9 +31,9 @@ namespace KYCServiceApi.Controllers
 
         [HttpGet]
         [Route("GetAllCustomer")]
-        public async Task<IActionResult> GetAllCustomer(int status)
+        public async Task<IActionResult> GetAllCustomer(int status,int page, int perPage)
         {
-            var response = await _service.GetAllCustomer(status);
+            var response = await _service.GetAllCustomer(status, page, perPage);
             return Ok(response);
         }
 

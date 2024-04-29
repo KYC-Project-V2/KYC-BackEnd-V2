@@ -37,12 +37,25 @@ namespace Model
     }
     public class CustomerList
     {
+        public int SrNo { get; set; }
         public string RequestNo { get; set; }
         public string DomainName { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Phone { get; set; }
         public string Status { get; set; }
         public string CertificateStatus { get; set; }
+        
+    }
+
+    public class CustomerListResponse 
+    {
+       
+        public int page { get; set; }
+        public int perPage { get; set; }
+        public int Total { get; set; }
+
+        public int TotalPages { get; set; }
+        public List<CustomerList> data { get; set; }
         public string? ErrorMessage { get; set; }
     }
     public class CustomerUpdate

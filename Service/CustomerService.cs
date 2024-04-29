@@ -15,9 +15,9 @@ namespace Service
         private readonly IService<Email> _emailService;
         private readonly IService<Domain> _domainService;
         private readonly IService<RootCertificate> _rootCertificateService;
-        public CustomerService(IRepository<CustomerDetail> repository, 
-            IService<TemplateConfiguration> templateConfigurationservice, 
-            IService<Certificate> certificateService, 
+        public CustomerService(IRepository<CustomerDetail> repository,
+            IService<TemplateConfiguration> templateConfigurationservice,
+            IService<Certificate> certificateService,
             IService<Email> emailService,
             IService<Domain> domainService,
             IService<RootCertificate> rootCertificateService)
@@ -41,32 +41,48 @@ namespace Service
             return response;
         }
 
-        public override async Task<List<CustomerList>> GetAllCustomer(int status)
+        public override async Task<CustomerListResponse> GetAllCustomer(int status, int page, int perPage)
         {
             var response = await Repository.GetAllCustomer(status);
+            CustomerListResponse customerResponse = null;
             if (response == null)
             {
-                var customerList = new List<CustomerList>();
-                customerList.Add(new CustomerList
-                {
-                    ErrorMessage = "No Customers Found"
+                customerResponse = new CustomerListResponse();
+                customerResponse.ErrorMessage = "No Customers Found";
+              
+                customerResponse.data = null;
 
-                });
-
-                return customerList;
+                return customerResponse;
             }
             else // Filters Customers 
             {
-                if (status == 1) // Get the Issued Records
+                //if (status == 1) // Get the Issued Records
+                //{
+                //    response = response.Where(i => i.CertificateStatus == "Issued").ToList();
+                //}
+                //else // Get the Pending Records
+                //{
+                //    response = response.Where(i => i.CertificateStatus != "Issued").ToList();
+                //}
+
+                int Total = response.Count();
+                if (perPage > 0 && Total > 0)
                 {
-                    response = response.Where(i => i.CertificateStatus == "Issued").ToList();
+                    int TotalPages = Total / perPage;
+                    var data= response.Skip((page-1)*perPage).Take(perPage).ToList();
+                    customerResponse = new CustomerListResponse
+                    {
+                        page = page,
+                        perPage = perPage,
+                        Total = Total,
+                        TotalPages = TotalPages,
+                        data = data
+                    };
                 }
-                else // Get the Pending Records
-                {
-                    response = response.Where(i => i.CertificateStatus != "Issued").ToList();
-                }
+
+
             }
-            return response;
+            return customerResponse;
         }
 
         public override async Task<CustomerResponse> UpdateKYCCustomerDetails(CustomerUpdate customerUpdate, string certificates, string certificatesPath)
@@ -88,7 +104,7 @@ namespace Service
                         var rootcertificate = await _rootCertificateService.Get(string.Empty);
                         x509certificate.CARootPath = rootcertificate.Certificates;
                         var apidownloadFilebytes = KYCUtility.GetX509Certificate(x509certificate);
-                        certificates = apidownloadFilebytes.SerialNumber != null ? apidownloadFilebytes.SerialNumber  : "" ;
+                        certificates = apidownloadFilebytes.SerialNumber != null ? apidownloadFilebytes.SerialNumber : "";
                         certificatesPath = (apidownloadFilebytes.CertificateBytes != null) ? Convert.ToBase64String(apidownloadFilebytes.CertificateBytes) : "";
                     }
                 }
@@ -105,8 +121,8 @@ namespace Service
             {
                 var custRequest = new CustomerRequest
                 {
-                    RequestNo= customerUpdate.RequestNo,
-                    LoggedInUserId  =   customerUpdate.LoggedInUserId
+                    RequestNo = customerUpdate.RequestNo,
+                    LoggedInUserId = customerUpdate.LoggedInUserId
                 };
                 var custData = await Repository.GetCustomerData(custRequest);
                 string htmlBody = string.Empty;
@@ -143,17 +159,17 @@ namespace Service
                     htmlBody = htmlBody.Replace("{{name}}", customerUpdate.RequesterName);
                     htmlBody = htmlBody.Replace("{{bodyMessage}}", bodyMsg);
                     htmlBody = htmlBody.Replace("{{requestnumber}}", customerUpdate.RequestNo);
-                    htmlBody = htmlBody.Replace("{{comment}}", customerUpdate.Comments);                    
+                    htmlBody = htmlBody.Replace("{{comment}}", customerUpdate.Comments);
                 }
                 else if (!customerUpdate.AddharVerificationStatus && !customerUpdate.PanVerificationStatus)
                 {
                     string bodyMsg = (custData.RequestTypeId == 1) ? "This is to inform you that your Pan and Aadhar card is not valid." : "This is to inform you that your Pan and GST is not valid.";
-                   
+
                     htmlBody = htmlBody.Replace("{{name}}", customerUpdate.RequesterName);
                     htmlBody = htmlBody.Replace("{{bodyMessage}}", bodyMsg);
                     htmlBody = htmlBody.Replace("{{requestnumber}}", customerUpdate.RequestNo);
                     htmlBody = htmlBody.Replace("{{comment}}", customerUpdate.Comments);
-                   
+
                 }
                 var email = new Email
                 {
