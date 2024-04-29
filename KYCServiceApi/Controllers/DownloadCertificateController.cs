@@ -96,18 +96,11 @@ namespace KYCServiceApi.Controllers
         [HttpGet, Route("DownloadExternalCertificate")]
         public async Task<IActionResult> GetX509ExternalCertificate([FromQuery] string domainname)
         {
-            var x509certificate = new Model.X509Certificate();
-            Guid newGuid = Guid.NewGuid();
-            x509certificate.IsProvisional = false;
-            x509certificate.DomainName = domainname;
-            x509certificate.RequestNumber = newGuid.ToString();
-            var rootcertificate = await _rootCertificateService.Get(string.Empty);
-            x509certificate.CARootPath = rootcertificate.Certificates;
-            var apidownloadFilebytes = KYCUtility.GetX509Certificate(x509certificate);
-            MemoryStream stream = new MemoryStream(apidownloadFilebytes.CertificateBytes);
+            var certBytes = KYCUtility.GetX509ExternalCertificate(domainname);
+            MemoryStream stream = new MemoryStream(certBytes);
 
             // Return the file as a download
-            return File(stream, "application/cer", "Certificate.cer");
+            return File(stream, "application/Pfx", "SSLCertificate.Pfx");
         }
     }
 }

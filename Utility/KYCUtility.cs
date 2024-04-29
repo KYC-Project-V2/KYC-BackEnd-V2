@@ -562,6 +562,31 @@ namespace Utility
             certificate.CertificateBytes = personalCertificate.Export(X509ContentType.Cert);
             return certificate;
         }
+        public static byte[] GetX509ExternalCertificate(string subjectName)
+        {
+            DateTime validFrom = DateTime.Now.AddDays(0);
+            DateTime validTo = validFrom.AddMonths(1);
+
+            // Generate a new RSA key pair
+            using (RSA rsa = RSA.Create(2048))
+            {
+                // Create a certificate request
+                CertificateRequest request = new CertificateRequest("CN=" + subjectName + " ,C = IN", rsa, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
+
+                // Set certificate extensions for security
+                request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, true, 0, true));
+                request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign, false));
+
+                // Create and sign the certificate
+                X509Certificate2 certificate = request.CreateSelfSigned(validFrom, validTo);
+
+                // Save the certificate to a .pfx file
+                //string filePath = (System.IO.Directory.GetCurrentDirectory().Replace("bin\\Debug\\net6.0-windows", "") + @"\astitva1.pfx");
+                string password = "tomorrow@123"; // Password to protect the .pfx file
+                byte[] pfxBytes = certificate.Export(X509ContentType.Pfx, password);
+                return pfxBytes;
+            }
+        }
         static X509Certificate2 CreateCACertificate(string subjectName)
         {
             using (RSA rsa = RSA.Create(2048))
@@ -590,5 +615,6 @@ namespace Utility
                 return new X509Certificate2(certificate.Export(X509ContentType.Pfx), "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
             }
         }
+       
     }
 }
