@@ -22,6 +22,8 @@ namespace Model
         public string? TokenID { get; set; }
         public string? RequestErrorMessage { get; set; }
         public string? TokenErrorMessage { get; set; }
+
+        public string? DomainName { get; set; }
     }
 
 }

@@ -56,5 +56,31 @@ namespace KYCServiceApi.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+        [HttpPost("ServiceProviderPostInfo")]
+        public async Task<IActionResult> ServiceProviderPostInfo([FromBody] APIStatus apiStatus)
+        {
+            try
+            {
+                var apiresponse = await _apiservice.Post(apiStatus);
+                return Ok(new { ErrorMessage = "Success" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] string tokenNumber)
+        {
+            try
+            {
+                var apiresponse = await _apiservice.Get(tokenNumber);
+                return Ok(apiresponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

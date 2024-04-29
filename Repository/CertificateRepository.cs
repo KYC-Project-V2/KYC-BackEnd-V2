@@ -30,7 +30,8 @@ namespace Repository
                     while (reader.Read())
                     {
                         var model = Load<Certificate>(reader);
-                        model.ExpiredOn =Math.Round((model.ExpireDate - System.DateTime.Now).TotalDays).ToString();
+                        if(model!=null)
+                          model.ExpiredOn =Math.Round((model.ExpireDate - System.DateTime.Now).TotalDays).ToString();
                         models.Add(model);
                     }
                 }

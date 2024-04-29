@@ -227,7 +227,7 @@ namespace Service
 
             foreach (Certificate c in response)
             {
-                tbody.Append("<tr><td style='border: 1px solid #000000;text-align: center;'>" + c.DomainName + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c.Certificates + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c.ExpiredOn + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c.ExpireDate + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c.CreatedDate + "</td></tr>");
+                tbody.Append("<tr><td style='border: 1px solid #000000;text-align: center;'>" + c?.DomainName + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c?.Certificates + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c?.ExpiredOn + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c?.ExpireDate + "</td><td style='border: 1px solid #000000;text-align: center;'>" + c?.CreatedDate + "</td></tr>");
 
             }
             htmlBody = htmlBody.Replace("{{tablerows}}", tbody.ToString());

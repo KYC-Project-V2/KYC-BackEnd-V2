@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utility;
 
 namespace Service
 {
@@ -14,6 +15,20 @@ namespace Service
         {
             Repository = repository;
         }
-       
+        public override async Task<APIStatus> Get(APIStatus apiStatus)
+        {
+            var response = await Repository.Get(apiStatus);
+            return response;
+        }
+        public override async Task<APIStatus> Post(APIStatus apiStatus)
+        {
+            var response = await Repository.Post(apiStatus);
+            return response;
+        }
+        public override async Task<APIStatus> Get(string tokenNumber)
+        {
+            var response = await Repository.Get(tokenNumber);
+            return response;
+        }
     }
 }
