@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 using Model;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto.Tls;
 using Service;
 using System.Reflection;
 using System.Text;
 using Twilio.Rest;
 using Utility;
+using Certificate = Model.Certificate;
 
 namespace KYCServiceApi.Controllers
 {
@@ -101,8 +103,9 @@ namespace KYCServiceApi.Controllers
             x509certificate.CARootPath = rootcertificate.Certificates;
             x509certificate.DomainName = domainname;
             var apidownloadFilebytes = KYCUtility.GetX509ExternalCertificate(x509certificate);
-            byte[] byteArray = Convert.FromBase64String(apidownloadFilebytes);
-            MemoryStream stream = new MemoryStream(byteArray);
+            //byte[] certBytes = apidownloadFilebytes.GetEncoded();
+            //byte[] byteArray = Convert.FromBase64String(apidownloadFilebytes);
+            MemoryStream stream = new MemoryStream(apidownloadFilebytes.CertificateBytes);
 
             // Return the file as a download
             return File(stream, "application/cer", "SSLCertificate.cer");
