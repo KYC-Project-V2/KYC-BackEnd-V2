@@ -81,7 +81,7 @@ namespace KYCServiceApi.Controllers
             MemoryStream stream = new MemoryStream(byteArray);
 
             //Return the file as a download
-            return File(stream, "application/cer", "CACertificate.pfx");
+            return File(stream, "application/pfx", "CACertificate.pfx");
         }
         [HttpGet, Route("DownloadMyCertificate")]
         public async Task<IActionResult> GetX509Certificate([FromQuery] string domainname)
@@ -96,11 +96,16 @@ namespace KYCServiceApi.Controllers
         [HttpGet, Route("DownloadExternalCertificate")]
         public async Task<IActionResult> GetX509ExternalCertificate([FromQuery] string domainname)
         {
-            var certBytes = KYCUtility.GetX509ExternalCertificate(domainname);
-            MemoryStream stream = new MemoryStream(certBytes);
+            var x509certificate = new Model.X509Certificate();
+            var rootcertificate = await _rootCertificateService.Get(string.Empty);
+            x509certificate.CARootPath = rootcertificate.Certificates;
+            x509certificate.DomainName = domainname;
+            var apidownloadFilebytes = KYCUtility.GetX509ExternalCertificate(x509certificate);
+            byte[] byteArray = Convert.FromBase64String(apidownloadFilebytes);
+            MemoryStream stream = new MemoryStream(byteArray);
 
             // Return the file as a download
-            return File(stream, "application/Pfx", "SSLCertificate.Pfx");
+            return File(stream, "application/cer", "SSLCertificate.cer");
         }
     }
 }

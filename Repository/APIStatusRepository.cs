@@ -134,42 +134,18 @@ namespace Repository
         {
             try
             {
+                var storedProcedureName = "GetServiceProviderPostInfo";
                 APIStatus models = new APIStatus();
-                APIStatus apiStatus = new APIStatus();
-                apiStatus.TokenNumber = tokenNumber;
-                var storedProcedureName = "UpsertServiceProviderPostInfo";
                 using (SqlConnection connection = new SqlConnection(ConnectionInformation.ConnectionString))
                 {
                     connection.Open();
                     using (SqlCommand command = new SqlCommand(storedProcedureName, connection) { CommandType = CommandType.StoredProcedure })
-
                     {
-                        var model = (APIStatus)Convert.ChangeType(apiStatus, typeof(APIStatus));
-
-                        var parameters = new Dictionary<string, object>();
-                        var modelProperties = typeof(APIStatus).GetProperties().ToList();
-                        foreach (var property in modelProperties)
-                        {
-                            var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
-                            if (modelPropertyNameValue != null && property.Name != "CertificateExpire" && property.Name != "Status" && property.Name != "RequestErrorMessage"
-                                && property.Name != "TokenErrorMessage" && property.Name != "CustomerNumber")
-                            {
-                                parameters.Add(property.Name, modelPropertyNameValue);
-                            }
-                        }
-                        if (parameters.Any())
-                        {
-                            foreach (var f in parameters)
-                            {
-                                command.Parameters.Add(new SqlParameter($"{f.Key}", f.Value));
-                            }
-                        }
-                        var reader = await command.ExecuteReaderAsync();
-
+                        command.Parameters.Add(new SqlParameter("@TokenNumber", tokenNumber));
+                        var reader =await  command.ExecuteReaderAsync();
                         while (reader.Read())
                         {
-                            model = Load<APIStatus>(reader);
-                            APIStatus insertedRecord = new APIStatus
+                            models = new APIStatus
                             {
                                 // Example: Map the columns to properties of YourModel
                                 RequestNumber = reader.GetString(reader.GetOrdinal("RequestNumber")),
@@ -178,11 +154,9 @@ namespace Repository
                                 DomainName = reader.GetString(reader.GetOrdinal("DomainName"))
                                 // Map other columns as needed
                             };
-                            return insertedRecord;
+                            
                         }
                     }
-
-
                 }
                 return models;
             }

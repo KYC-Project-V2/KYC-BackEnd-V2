@@ -192,6 +192,7 @@ namespace Utility
             try
             {
                 Dynamsoft.OCR.Tesseract ocr = new Dynamsoft.OCR.Tesseract("t0085oQAAAIZYCmoNPvAcd0XOOWTkG9ibNXjW/E/yu9oeseopqeDV6J1B4Vo5SGi0dLvBCp5jeMahy8AEoF1fhJNLyrHm9Zi/TXI/+DBaJoWePfIEF3Af2w==");
+               
                 // Specify language folder
                 ocr.TessDataPath = Path.Combine(Directory.GetCurrentDirectory(), "OCRTessdata");
                 // OCR in English
@@ -562,30 +563,25 @@ namespace Utility
             certificate.CertificateBytes = personalCertificate.Export(X509ContentType.Cert);
             return certificate;
         }
-        public static byte[] GetX509ExternalCertificate(string subjectName)
+        public static Model.X509Certificate GetX509ExternalCertificate(Model.X509Certificate certificate)
         {
-            DateTime validFrom = DateTime.Now.AddDays(0);
-            DateTime validTo = validFrom.AddMonths(1);
+            byte[] byteArray = Convert.FromBase64String(certificate.CARootPath);
 
-            // Generate a new RSA key pair
-            using (RSA rsa = RSA.Create(2048))
+            var caCertificate = new X509Certificate2(byteArray);
+            Guid guid = Guid.NewGuid();
+            string serialnumber = guid.ToString();
+            // Generate a new serial number for the certificate
+            byte[] serialNumberBytes = Encoding.UTF8.GetBytes(serialnumber);
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {
-                // Create a certificate request
-                CertificateRequest request = new CertificateRequest("CN=" + subjectName + " ,C = IN", rsa, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
-
-                // Set certificate extensions for security
-                request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, true, 0, true));
-                request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign, false));
-
-                // Create and sign the certificate
-                X509Certificate2 certificate = request.CreateSelfSigned(validFrom, validTo);
-
-                // Save the certificate to a .pfx file
-                //string filePath = (System.IO.Directory.GetCurrentDirectory().Replace("bin\\Debug\\net6.0-windows", "") + @"\astitva1.pfx");
-                string password = "tomorrow@123"; // Password to protect the .pfx file
-                byte[] pfxBytes = certificate.Export(X509ContentType.Pfx, password);
-                return pfxBytes;
+                rng.GetBytes(serialNumberBytes);
             }
+            var subjectName = "CN = " + certificate.DomainName + " ,C = IN";
+            // Create a personal certificate signed by the CA
+            X509Certificate2 personalCertificate = CreatePersonalCertificate(subjectName, caCertificate, certificate.IsProvisional, serialNumberBytes);
+            certificate.SerialNumber = personalCertificate.SerialNumber;
+            certificate.CertificateBytes = personalCertificate.Export(X509ContentType.Cert);
+            return certificate;
         }
         static X509Certificate2 CreateCACertificate(string subjectName)
         {

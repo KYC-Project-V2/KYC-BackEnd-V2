@@ -75,7 +75,10 @@ namespace KYCServiceApi.Controllers
             try
             {
                 var apiresponse = await _apiservice.Get(tokenNumber);
-                return Ok(apiresponse);
+                if(apiresponse!=null && apiresponse.TokenID==null)
+                    return Ok(new { ErrorMessage = "Invalid" });
+                else
+                    return Ok(apiresponse);
             }
             catch (Exception ex)
             {

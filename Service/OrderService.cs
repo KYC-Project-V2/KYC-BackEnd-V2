@@ -240,7 +240,12 @@ namespace Service
                 Subject = templateconfig.FirstOrDefault().Subject,
                 Body = htmlBody,
             };
-            var emailResponse = await _emailService.Post(email);
+            try
+            {
+                var emailResponse = await _emailService.Post(email);
+            }
+            catch (Exception ex) { }
+           
             order.CertificateInfo = response;
             return order;
         }
