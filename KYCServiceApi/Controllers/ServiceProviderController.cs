@@ -91,7 +91,7 @@ namespace KYCServiceApi.Controllers
             var apidownloadBody = templateconfig.Body;
 
             var saltkey = _configuration.GetValue<string>("SecreteEncryptDecryptKey");
-            var responsedecrypt = KYCUtility.decrypt(tokencode, saltkey);
+            var responsedecrypt = KYCUtility.decrypt(tokencode.Replace(" ","+"), saltkey);
             var responsetokencodesplit = responsedecrypt.Split('&');
             var SProvider = new SProvider();
             SProvider.RequestNumber = responsetokencodesplit[0].Split('=')[1];
