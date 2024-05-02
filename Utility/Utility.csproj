@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -42,14 +42,15 @@
   <ItemGroup>
     <None Remove="C:\Users\user\.nuget\packages\dynamsoft.dotnet.barcode\9.6.20\build\linux\libDynamsoftLicenseClient.so" />
     <None Remove="dlls\libwkhtmltox.dll" />
+    <None Remove="libwkhtmltox.dll" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="C:\Users\User\.nuget\packages\dynamsoft.dotnet.barcode\9.6.20\build\windows\x64\libwkhtmltox.dll">
+    <Content Include="dlls\libwkhtmltox.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="dlls\libwkhtmltox.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="libwkhtmltox.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
