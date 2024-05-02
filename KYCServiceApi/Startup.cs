@@ -1,4 +1,6 @@
-﻿using KYCServiceApi.Models;
+﻿using DinkToPdf.Contracts;
+using DinkToPdf;
+using KYCServiceApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
@@ -20,6 +22,7 @@ namespace KYCServiceApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IConverter>(new SynchronizedConverter(new PdfTools()));
             services.Configure<AppSettings>(Configuration);
             services.AddSingleton<ISqlConnectionInformation>(new SqlConnectionInformation(Settings.appSettings));
 
