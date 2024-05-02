@@ -8,10 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="CCAvenueCryptoPackage" Version="2.2.0" />
+    <PackageReference Include="DinkToPdfAll" Version="1.0.5" />
     <PackageReference Include="Dynamsoft.DotNet.Barcode" Version="9.6.20" />
-    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
-    <PackageReference Include="itextsharp.xmlworker" Version="5.5.13.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="PDFsharp" Version="6.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="Tesseract" Version="5.2.0" />
     <PackageReference Include="Twilio" Version="6.7.0" />
@@ -41,6 +41,20 @@
 
   <ItemGroup>
     <None Remove="C:\Users\user\.nuget\packages\dynamsoft.dotnet.barcode\9.6.20\build\linux\libDynamsoftLicenseClient.so" />
+    <None Remove="dlls\libwkhtmltox.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="C:\Users\User\.nuget\packages\dynamsoft.dotnet.barcode\9.6.20\build\windows\x64\libwkhtmltox.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dlls\libwkhtmltox.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\User\.nuget\packages\dynamsoft.dotnet.barcode\9.6.20\build\windows\x64\libwkhtmltox.dll" />
   </ItemGroup>
 
 </Project>

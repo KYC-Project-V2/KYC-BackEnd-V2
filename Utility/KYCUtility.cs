@@ -16,12 +16,9 @@ using System.IO.Compression;
 using CCA.Util;
 using System.Security.Cryptography;
 using Tesseract;
-using System.Drawing.Printing;
-using iTextSharp.text.pdf;
-using iTextSharp.text;
-using iTextSharp.tool.xml;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography.X509Certificates;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 
 namespace Utility
 {
@@ -424,39 +421,39 @@ namespace Utility
 
             return columns.ToArray();
         }
-        public static async Task<string> CreatePdfWithHtmlContent(string htmlContent)
+        public static async Task<string> CreatePdfWithHtmlContent(string htmlContent, IConverter converter)
         {
             // HTML content to be converted to PDF
-           System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+           //System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
            
-            // Create a new MemoryStream to hold the PDF content
-            MemoryStream memoryStream = new MemoryStream();
+           // // Create a new MemoryStream to hold the PDF content
+           // MemoryStream memoryStream = new MemoryStream();
 
-            // Create a Document and PdfWriter
-            Document document = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
-            PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
+           // // Create a Document and PdfWriter
+           // Document document = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+           // PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
 
-            // Open the document for writing
-            document.Open();
+           // // Open the document for writing
+           // document.Open();
 
-            // Convert HTML to PDF
-            using (TextReader htmlReader = new StringReader(htmlContent))
-            {
-                try
-                {
-                    XMLWorkerHelper.GetInstance().ParseXHtml(writer, document, htmlReader);
-                }
-                catch (Exception ex)
-                {
+           // // Convert HTML to PDF
+           // using (TextReader htmlReader = new StringReader(htmlContent))
+           // {
+           //     try
+           //     {
+           //         XMLWorkerHelper.GetInstance().ParseXHtml(writer, document, htmlReader);
+           //     }
+           //     catch (Exception ex)
+           //     {
 
-                }
-            }
+           //     }
+           // }
 
             // Close the document
-            document.Close();
+            //document.Close();
 
             // Set the content type and return the PDF as a FileResult
-            byte[] pdfBytes = memoryStream.ToArray();
+            //byte[] pdfBytes = memoryStream.ToArray();
 
             var dateToUse = DateTime.Now;
             var invId = new DateTimeOffset(dateToUse).ToUnixTimeSeconds().ToString();
@@ -471,12 +468,38 @@ namespace Utility
             }
 
             string filePath = Path.Combine(pathToSave, "Invoice_" + invId + ".pdf");
-            File.WriteAllBytes(filePath, memoryStream.ToArray());
-            memoryStream.Close();
+            try
+            {
+                var doc = new HtmlToPdfDocument()
+                {
+                    GlobalSettings = {
+                ColorMode = ColorMode.Color,
+                Orientation = DinkToPdf.Orientation.Portrait,
+                PaperSize = DinkToPdf.PaperKind.A4,
+            },
+                    Objects = {
+                new ObjectSettings() {
+                    HtmlContent = htmlContent,
+                }
+            }
+                };
+                var filebytes = converter.Convert(doc);
+                // File.WriteAllBytes(filePath, filebytes);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    stream.Write(filebytes, 0, filebytes.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            //File.WriteAllBytes(filePath, memoryStream.ToArray());
+            //memoryStream.Close();
 
             return filePath;
         }
-        public static async Task<string> CreatePdfWithHtmlContentAPIDownload(string htmlContent)
+        public static async Task<string> CreatePdfWithHtmlContentAPIDownload(string htmlContent, IConverter converter)
         {
             // HTML content to be converted to PDF
             //htmlContent = "<html><body><div>Hello, World! This is a PDF created using iTextSharp.</div></body></html>";
@@ -493,32 +516,71 @@ namespace Utility
 
             string filePath = Path.Combine(pathToSave, "APIDownload_"+ apiId + ".pdf");
 
-            // Create a MemoryStream to hold the PDF content
-            using (MemoryStream outputStream = new MemoryStream())
+            //// Create a MemoryStream to hold the PDF content
+            //using (MemoryStream outputStream = new MemoryStream())
+            //{
+            //    // Create a Document
+            //    Document document = new Document();
+            //    PdfWriter writer = PdfWriter.GetInstance(document, outputStream);
+
+            //    // Open the document
+            //    document.Open();
+
+            //    // Create an XMLWorkerHelper instance
+            //    XMLWorkerHelper worker = XMLWorkerHelper.GetInstance();
+
+            //    // Parse the HTML content and write it to the PDF document
+            //    using (StringReader htmlReader = new StringReader(htmlContent))
+            //    {
+            //        worker.ParseXHtml(writer, document, htmlReader);
+            //    }
+
+            //    // Close the document
+            //    document.Close();
+
+            //    // Save the PDF content to the file
+            //    File.WriteAllBytes(filePath, outputStream.ToArray());
+            //}
+            //try
+            //{
+            //    PdfSharp.Pdf.PdfDocument document = new PdfSharp.Pdf.PdfDocument();
+            //    PdfSharp.Pdf.PdfPage page = document.AddPage();
+            //    XGraphics gfx = XGraphics.FromPdfPage(page);
+            //    XFont font = new XFont("Arial", 20,XFontStyleEx.BoldItalic);
+            //    gfx.DrawString(htmlContent, font, XBrushes.Black, new XRect(0, 0, page.Width, page.Height), XStringFormats.Center);
+            //    document.Save(filePath);
+            //    document.Close();
+            //}
+            //catch (Exception ex)
+            //{
+
+            //}
+            try
             {
-                // Create a Document
-                Document document = new Document();
-                PdfWriter writer = PdfWriter.GetInstance(document, outputStream);
-
-                // Open the document
-                document.Open();
-
-                // Create an XMLWorkerHelper instance
-                XMLWorkerHelper worker = XMLWorkerHelper.GetInstance();
-
-                // Parse the HTML content and write it to the PDF document
-                using (StringReader htmlReader = new StringReader(htmlContent))
-                {
-                    worker.ParseXHtml(writer, document, htmlReader);
+            var doc = new HtmlToPdfDocument()
+            {
+                GlobalSettings = {
+                ColorMode = ColorMode.Color,
+                Orientation = DinkToPdf.Orientation.Portrait,
+                PaperSize = DinkToPdf.PaperKind.A4,
+            },
+                Objects = {
+                new ObjectSettings() {
+                    HtmlContent = htmlContent,
                 }
-
-                // Close the document
-                document.Close();
-
-                // Save the PDF content to the file
-                File.WriteAllBytes(filePath, outputStream.ToArray());
             }
+            };
+            var filebytes = converter.Convert(doc);
+           // File.WriteAllBytes(filePath, filebytes);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    stream.Write(filebytes, 0, filebytes.Length);
+                }
+            }
+            catch (Exception ex)
+            {
 
+            }
             return filePath;
         }
 

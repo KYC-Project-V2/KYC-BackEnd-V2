@@ -100,7 +100,7 @@ namespace Repository
                         {
                             var modelPropertyNameValue = model.GetType().GetProperty(property.Name)?.GetValue(model);
                             if (modelPropertyNameValue != null && property.Name != "CertificateExpire" && property.Name != "Status" && property.Name != "RequestErrorMessage" 
-                                && property.Name != "TokenErrorMessage" && property.Name != "CustomerNumber")
+                                && property.Name != "TokenErrorMessage" && property.Name != "CustomerNumber" && property.Name != "RequestNumber")
                             {
                                 parameters.Add(property.Name, modelPropertyNameValue);
                             }
@@ -148,10 +148,10 @@ namespace Repository
                             models = new APIStatus
                             {
                                 // Example: Map the columns to properties of YourModel
-                                RequestNumber = reader.GetString(reader.GetOrdinal("RequestNumber")),
                                 TokenID = reader.GetString(reader.GetOrdinal("TokenUrl")),
                                 OrderNumber = reader.GetString(reader.GetOrdinal("OrderNumber")),
-                                DomainName = reader.GetString(reader.GetOrdinal("DomainName"))
+                                DomainName = reader.GetString(reader.GetOrdinal("DomainName")),
+                                TokenNumber= reader.GetString(reader.GetOrdinal("RequestToken"))
                                 // Map other columns as needed
                             };
                             

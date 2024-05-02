@@ -10,8 +10,8 @@ namespace KYCServiceApi.Controllers
         [HttpGet]
         public async Task<IActionResult> CreatePdfWithHtmlContent()
         {
-            var response = await KYCUtility.CreatePdfWithHtmlContent("");
-            return Ok(response);
+            //var response = await KYCUtility.CreatePdfWithHtmlContent("");
+            return Ok("");
         }
     }
 }

@@ -6,6 +6,7 @@ using Utility;
 using System.Security.Cryptography;
 using System.Net.WebSockets;
 using System.Security.Cryptography.X509Certificates;
+using DinkToPdf.Contracts;
 
 namespace Service
 {
@@ -31,7 +32,7 @@ namespace Service
         private readonly IService<Certificate> _certificateService;
         private readonly IService<Domain> _domainService;
         private readonly IService<RootCertificate> _rootCertificateService;
-
+        private readonly IConverter _converter;
         public OrderService(
             IRepository<RequestOrigin> requestOriginRepository,
             IRepository<PersonalInfo> personalInfoRepository,
@@ -49,7 +50,7 @@ namespace Service
             IRepository<VoterInfo> voterInfoRepository,
             IRepository<DriverLicenseInfo> driverLicenseInfoRepository,
             IService<Domain> domainService,
-            IService<RootCertificate> rootCertificateService)
+            IService<RootCertificate> rootCertificateService, IConverter converter)
         {
             _requestOriginRepository = requestOriginRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -68,6 +69,7 @@ namespace Service
             _driverLicenseInfoRepository = driverLicenseInfoRepository;
             _domainService = domainService;
             _rootCertificateService = rootCertificateService;
+            _converter = converter;
         }
         public override async Task<Order> Post(Order order)
         {
@@ -110,8 +112,8 @@ namespace Service
 
             if (canPayment)
             {
-                SentPaymentEmail(order, name);
-                GenerateCertificate(order);
+                 SentPaymentEmail(order, name);
+                 GenerateCertificate(order);
 
             }
             if (!string.IsNullOrEmpty(order.RequestOrigin.CheckList))
@@ -327,7 +329,7 @@ namespace Service
                 invoiceBody = invoiceBody.Replace("{{TotalAmountInWord}}", "Indian Rupees " + totalAmount.ToWords().Titleize() + " Only");
                 invoiceBody = invoiceBody.Replace("{{GstAmountInWord}}", "Indian Rupees " + order.Payment.KycGST.ToWords().Titleize() + " Only");
 
-                invoiceFilePath = KYCUtility.CreatePdfWithHtmlContent(invoiceBody).Result;
+                invoiceFilePath = KYCUtility.CreatePdfWithHtmlContent(invoiceBody, _converter).Result;
             }
             //----------end of Invoice code--------//
 

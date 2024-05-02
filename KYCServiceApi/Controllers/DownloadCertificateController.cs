@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 
 using Model;
-using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Crypto.Tls;
 using Service;
 using System.Reflection;
 using System.Text;
