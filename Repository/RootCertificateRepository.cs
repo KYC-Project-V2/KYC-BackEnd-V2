@@ -89,6 +89,7 @@ namespace Repository
                                     // Example: Map the columns to properties of YourModel
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     Certificates = reader.GetString(reader.GetOrdinal("Certificates")),
+                                    CerCertificates = reader.GetString(reader.GetOrdinal("CerCertificates")),
                                     ExpireDate = reader.GetDateTime(reader.GetOrdinal("ExpireDate")),
                                     CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
                                     // Map other columns as needed
