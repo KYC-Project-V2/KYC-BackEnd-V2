@@ -602,7 +602,7 @@ namespace Utility
         {
             // Create a root CA certificate
             //List<X509Certificate2> caCertificate = 
-            return  CreateCACertificate("cn=Astitvatech.com.com ,O=Astitvatech, L=Delhi, S=Delhi, C=IN");
+            return  CreateCACertificate("cn=Astitvatech.com ,O=Astitvatech, L=Delhi, S=Delhi, C=IN");
             //byte[] certBytes = caCertificate[0].Export(X509ContentType.Pfx);
             //return certBytes;
         }
