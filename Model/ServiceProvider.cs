@@ -62,7 +62,7 @@ namespace Model
         public bool IsGSTVerificationStatus { get; set; }
         public string Email { get; set; }
         public string? Comments { get; set; }
-        public string LoggedInUserId { get; set; }
+        public int LoggedInUserId { get; set; }
         public string? ErrorMessage { get; set; }
 
     }
