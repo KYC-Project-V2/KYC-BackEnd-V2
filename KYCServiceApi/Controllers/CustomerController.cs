@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using Service;
+using Newtonsoft.Json;
 
 
 
@@ -13,9 +14,11 @@ namespace KYCServiceApi.Controllers
     public class CustomerController : BaseController
     {
         private readonly IService<CustomerDetail> _service;
-        public CustomerController(IService<CustomerDetail> service)
+        private readonly ILogger<CustomerController> _logger;
+        public CustomerController(IService<CustomerDetail> service, ILogger<CustomerController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         // GET single user/5
@@ -23,7 +26,9 @@ namespace KYCServiceApi.Controllers
         [Route("GetCustomer")]
         public async Task<IActionResult> GetCustomer(CustomerRequest customerRequest)
         {
+            _logger.LogInformation("GetCustomer method call started: "+ JsonConvert.SerializeObject(customerRequest)+" :"+DateTime.Now );
             var response = await _service.GetCustomerData(customerRequest);
+            _logger.LogInformation("GetCustomer method call end: " + JsonConvert.SerializeObject(response) + " :" + DateTime.Now);
             return Ok(response);
         }
 

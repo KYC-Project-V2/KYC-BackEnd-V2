@@ -15,7 +15,10 @@
     <PackageReference Include="CCAvenueCryptoPackage" Version="2.2.0" />
     <PackageReference Include="Dynamsoft.DotNet.Barcode" Version="9.6.20" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.21" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1" />
     <PackageReference Include="Tesseract" Version="5.2.0" />
   </ItemGroup>
