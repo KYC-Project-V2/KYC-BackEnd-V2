@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Model;
 using Service;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Twilio.Rest;
 using Utility;
@@ -67,7 +68,7 @@ namespace KYCServiceApi.Controllers
         [HttpGet, Route("DownloadCACertificate")]
         public async Task<IActionResult> CreateX509CACertificate()
         {
-            var apidownloadFilebytes = KYCUtility.GetX509CACertificate();
+            var lstX509Certificates = KYCUtility.GetX509CACertificate();
             //MemoryStream stream = new MemoryStream(apidownloadFilebytes);
 
             // Return the file as a download
@@ -75,13 +76,14 @@ namespace KYCServiceApi.Controllers
             var certificate = new RootCertificate();
             certificate.CreatedDate = DateTime.Now;
             certificate.ExpireDate = DateTime.Now.AddYears(24);
-            certificate.Certificates = Convert.ToBase64String(apidownloadFilebytes);
+            certificate.Certificates = Convert.ToBase64String(lstX509Certificates[0].Export(X509ContentType.Pfx));
+            certificate.CerCertificates = Convert.ToBase64String(lstX509Certificates[0].Export(X509ContentType.Cert));
             var rootcertificate = await _rootCertificateService.Post(certificate);
-            byte[] byteArray = Convert.FromBase64String(rootcertificate.Certificates);
+            byte[] byteArray = Convert.FromBase64String(rootcertificate.CerCertificates);
             MemoryStream stream = new MemoryStream(byteArray);
 
             //Return the file as a download
-            return File(stream, "application/pfx", "CACertificate.pfx");
+            return File(stream, "application/cer", "Astitvaroot.cer");
         }
         [HttpGet, Route("DownloadMyCertificate")]
         public async Task<IActionResult> GetX509Certificate([FromQuery] string domainname)
@@ -92,21 +94,6 @@ namespace KYCServiceApi.Controllers
 
             // Return the file as a download
             return File(stream, "application/cer", "Certificate.cer");
-        }
-        [HttpGet, Route("DownloadExternalCertificate")]
-        public async Task<IActionResult> GetX509ExternalCertificate([FromQuery] string domainname)
-        {
-            var x509certificate = new Model.X509Certificate();
-            var rootcertificate = await _rootCertificateService.Get(string.Empty);
-            x509certificate.CARootPath = rootcertificate.Certificates;
-            x509certificate.DomainName = domainname;
-            var apidownloadFilebytes = KYCUtility.GetX509ExternalCertificate(x509certificate);
-            //byte[] certBytes = apidownloadFilebytes.GetEncoded();
-            //byte[] byteArray = Convert.FromBase64String(apidownloadFilebytes);
-            MemoryStream stream = new MemoryStream(apidownloadFilebytes.CertificateBytes);
-
-            // Return the file as a download
-            return File(stream, "application/cer", "SSLCertificate.cer");
         }
     }
 }

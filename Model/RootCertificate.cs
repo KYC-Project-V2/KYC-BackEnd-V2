@@ -9,7 +9,8 @@ namespace Model
     public class RootCertificate
     {
         public int Id { get; set; }
-        public string Certificates { get; set; }
+        public string? Certificates { get; set; }
+        public string? CerCertificates { get; set; }
         public DateTime ExpireDate { get; set; }
         public DateTime CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
