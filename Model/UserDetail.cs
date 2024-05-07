@@ -17,7 +17,7 @@ namespace Model
         public string AddressLine2 { get; set; }
         public string City { get; set; }
         public int StateId { get; set; }
-        public string PostalCode { get; set; }
+        public int PostalCode { get; set; }
         public int CountryId { get; set; }
         public string Reference { get; set; }
         public string Email { get; set; }
