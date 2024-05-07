@@ -148,6 +148,8 @@ namespace Repository
                                     ApiStatusText = reader.GetString(reader.GetOrdinal("ApiStatusText")),
                                     Tokencode = reader.GetString(reader.GetOrdinal("Tokencode")),
                                     CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
+                                    IsGSTVerificationStatus = reader.GetBoolean(reader.GetOrdinal("IsGSTVerificationStatus")),
+                                    IsPanVerficationStatus = reader.GetBoolean(reader.GetOrdinal("IsPanVerficationStatus")),
                                     // Map other columns as needed
                                 };
 

@@ -10,6 +10,7 @@ namespace Model
     {
         public int? PersonInternalId { get; set; }
         public string? RequestNo { get; set; }
+        public string? SprequestNo { get; set; }
         public int? RequestTypeId { get; set; }
         public string FirstName { get; set; }
         public string? MiddleName { get; set; }
